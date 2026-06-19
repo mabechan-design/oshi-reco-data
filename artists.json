@@ -1,158 +1,45 @@
-[
-  {
-    "group": "20th Century",
-    "members": []
-  },
-  {
-    "group": "NEWS",
-    "members": []
-  },
-  {
-    "group": "SUPER EIGHT",
-    "members": []
-  },
-  {
-    "group": "Hey! Say! JUMP",
-    "members": []
-  },
-  {
-    "group": "Kis-My-Ft2",
-    "members": []
-  },
-  {
-    "group": "timelesz",
-    "members": []
-  },
-  {
-    "group": "A.B.C-Z",
-    "members": []
-  },
-  {
-    "group": "WEST.",
-    "members": []
-  },
-  {
-    "group": "SixTONES",
-    "members": []
-  },
-  {
-    "group": "Snow Man",
-    "members": []
-  },
-  {
-    "group": "Naniwa Danshi",
-    "members": []
-  },
-  {
-    "group": "Travis Japan",
-    "members": []
-  },
-  {
-    "group": "Ae! group",
-    "members": []
-  },
-  {
-    "group": "King & Prince",
-    "members": []
-  },
-  {
-    "group": "4U",
-    "members": []
-  },
-  {
-    "group": "Takuya Kimura",
-    "members": []
-  },
-  {
-    "group": "Koichi Domoto",
-    "members": []
-  },
-  {
-    "group": "Masaki Aiba",
-    "members": []
-  },
-  {
-    "group": "Sho Sakurai",
-    "members": []
-  },
-  {
-    "group": "You Yokoyama",
-    "members": []
-  },
-  {
-    "group": "Tatsuya Ueda",
-    "members": []
-  },
-  {
-    "group": "Yuichi Nakamaru",
-    "members": []
-  },
-  {
-    "group": "Yuto Nakajima",
-    "members": []
-  },
-  {
-    "group": "Hiroki Uchi",
-    "members": []
-  },
-  {
-    "group": "Jun Hasegawa",
-    "members": []
-  },
-  {
-    "group": "Keito Okamoto",
-    "members": []
-  },
-  {
-    "group": "Kento Nakajima",
-    "members": []
-  },
-  {
-    "group": "Fumito Kawai",
-    "members": []
-  },
-  {
-    "group": "Keita Richard Kusama",
-    "members": []
-  },
-  {
-    "group": "Shota Hayashi",
-    "members": []
-  },
-  {
-    "group": "Ryuta Muro",
-    "members": []
-  },
-  {
-    "group": "Sho Takada",
-    "members": []
-  },
-  {
-    "group": "Daichi Imae",
-    "members": []
-  },
-  {
-    "group": "Kota Matsumoto",
-    "members": []
-  },
-  {
-    "group": "Kento Tomioka",
-    "members": []
-  },
-  {
-    "group": "Yuki Nozawa",
-    "members": []
-  },
-  {
-    "group": "Naoki Fujii",
-    "members": []
-  },
-  {
-    "group": "Kohji Uchiumi",
-    "members": []
-  },
-  {
-    "group": "Atsuhiro Sato",
-    "members": []
-  }
-]
+name: 公演情報を週1回自動取得
+
+on:
+  schedule:
+    # 毎週月曜 6:00 JST（日曜 21:00 UTC）に実行
+    - cron: '0 21 * * 0'
+  workflow_dispatch: # 手動実行ボタンも有効にする
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 依存パッケージをインストール
+        run: npm install
+
+      - name: Playwright ブラウザをインストール
+        run: npx playwright install chromium --with-deps
+
+      - name: スクレイピング実行
+        run: node scraper.mjs
+
+      - name: デバッグファイルを保存
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug
+          path: debug_cast.txt
+          if-no-files-found: ignore
+
+      - name: lives.json をコミット・プッシュ
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lives.json artists.json
+          git diff --staged --quiet || git commit -m "chore: 公演・アーティスト情報を自動更新 $(date '+%Y-%m-%d')"
+          git push

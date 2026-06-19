@@ -8,7 +8,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ── 1. グループ一覧を取得 ─────────────────────────────────────
 async function getArtistList(page) {
-  await page.goto(`${BASE}/s/p/search/artist?ima=3141`, { waitUntil: 'networkidle', timeout: 30000 });
+  await page.goto(`${BASE}/s/p/search/artist?ima=3141&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
 
   return page.evaluate(() => {
     const artists = [];
@@ -40,24 +40,34 @@ async function getArtistList(page) {
 // ── 2. タレント一覧からグループ→メンバーマッピングを構築 ────
 // ?data=talent ページでは各タレント名の下にグループ名がカッコ書きで表示される
 async function getTalentGroupMap(page) {
-  await page.goto(`${BASE}/s/p/search/artist?ima=2555&data=talent`, { waitUntil: 'networkidle', timeout: 30000 });
+  await page.goto(`${BASE}/s/p/search/artist?ima=2555&data=talent&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
   await sleep(1200);
+
+  // デバッグ: リストアイテムの構造を保存（最初の3件）
+  const debugHtml = await page.evaluate(() => {
+    const items = document.querySelectorAll('.p-in_artist__list-item');
+    if (items.length === 0) return '<p>NO ITEMS FOUND</p>';
+    return Array.from(items).slice(0, 3).map(el => el.outerHTML).join('\n\n---\n\n');
+  });
+  await fs.writeFile('debug_talent.html', debugHtml, 'utf-8');
+  console.log(`  DEBUG: debug_talent.html に保存（リストアイテム数: ${await page.evaluate(() => document.querySelectorAll('.p-in_artist__list-item').length)}）`);
 
   return page.evaluate(() => {
     const map = {}; // グループ名 → メンバー名[]
 
     document.querySelectorAll('.p-in_artist__list-item').forEach(li => {
-      const nameEl  = li.querySelector('.c-ttl-2');
-      const name    = nameEl ? nameEl.textContent.trim() : '';
+      const nameEl = li.querySelector('.c-ttl-2');
+      const name   = nameEl ? nameEl.textContent.trim() : '';
       if (!name) return;
 
-      // グループ名はカッコ書きで名前の下に出る要素 (.c-artist_card__name-hosoku など)
-      const groupEl  = li.querySelector('.c-artist_card__name-hosoku');
+      // グループ名はカッコ書きで名前の下に出る要素（複数セレクタを試す）
+      const groupEl  = li.querySelector('.c-artist_card__name-hosoku')
+                    || li.querySelector('.c-subhead-2')
+                    || li.querySelector('.c-ttl-3');
       const groupRaw = groupEl ? groupEl.textContent.trim() : '';
-      // カッコを除去
       const group    = groupRaw.replace(/[()（）]/g, '').trim();
 
-      if (!group) return; // グループ所属なし = ソロ
+      if (!group) return;
       if (!map[group]) map[group] = [];
       if (!map[group].includes(name)) map[group].push(name);
     });
@@ -76,12 +86,15 @@ async function getJrGroups(page) {
     return page.evaluate(() => {
       const names = [];
       const seen  = new Set();
-      // 名前要素を幅広く拾う（サイト構造が不明なため複数候補）
       const selectors = ['.c-ttl-2', '.c-ttl-1', '[class*="name"]', 'h2', 'h3', 'h4'];
       for (const sel of selectors) {
         document.querySelectorAll(sel).forEach(el => {
-          const name = el.textContent.trim().replace(/\s+/g, ' ');
-          if (!name || seen.has(name) || name.length > 30) return;
+          const raw = el.textContent.trim().replace(/\s+/g, ' ');
+          if (!raw || raw.length > 40) return;
+          // "グループ名 Group Name" → "グループ名"（日本語部分のみ）
+          const jaMatch = raw.match(/^([^\x00-\x7F]+)/);
+          const name = jaMatch ? jaMatch[1].trim() : raw;
+          if (!name || seen.has(name)) return;
           seen.add(name);
           names.push(name);
         });
@@ -99,20 +112,70 @@ async function getJrGroups(page) {
 async function getJrPersons(page) {
   try {
     await page.goto(`${JR_BASE}/s/jr/page/persons?ima=3009`, { waitUntil: 'networkidle', timeout: 30000 });
-    await sleep(1200);
+
+    // 遅延読み込みに対応：ページ末尾まで繰り返しスクロール
+    let prevCount = 0;
+    for (let i = 0; i < 20; i++) {
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await sleep(800);
+      const count = await page.evaluate(() =>
+        document.querySelectorAll('.p-in_artist__list-item, .c-artist_card, [class*="person"], [class*="artist"]').length
+      );
+      if (count === prevCount) break;
+      prevCount = count;
+    }
+    await sleep(500);
+
+    // デバッグ: ジュニア個人ページの構造を保存
+    const debugJr = await page.evaluate(() => {
+      const items = document.querySelectorAll('.p-in_artist__list-item');
+      if (items.length > 0) {
+        return `ITEMS(${items.length}):\n` + Array.from(items).slice(0, 3).map(el => el.outerHTML).join('\n---\n');
+      }
+      // アイテムが見つからない場合はページ全体のクラス一覧を返す
+      const classes = new Set();
+      document.querySelectorAll('[class]').forEach(el => {
+        el.className.split(/\s+/).forEach(c => c && classes.add(c));
+      });
+      return 'NO .p-in_artist__list-item\nCLASSES: ' + [...classes].slice(0, 60).join(', ');
+    });
+    await fs.writeFile('debug_jr_persons.html', debugJr, 'utf-8');
+    console.log('  DEBUG: debug_jr_persons.html を保存');
+
     return page.evaluate(() => {
+      const toJa = raw => {
+        const m = raw.match(/^([^\x00-\x7F]+)/);
+        return m ? m[1].trim() : '';
+      };
       const names = [];
       const seen  = new Set();
-      const selectors = ['.c-ttl-2', '.c-ttl-1', '[class*="name"]', 'h2', 'h3', 'h4'];
-      for (const sel of selectors) {
-        document.querySelectorAll(sel).forEach(el => {
-          const name = el.textContent.trim().replace(/\s+/g, ' ');
-          if (!name || seen.has(name) || name.length > 20) return;
+
+      // まず .p-in_artist__list-item 内の .c-ttl-2 を狙い打ち
+      const items = document.querySelectorAll('.p-in_artist__list-item');
+      if (items.length > 0) {
+        items.forEach(li => {
+          const nameEl = li.querySelector('.c-ttl-2') || li.querySelector('.c-ttl-1');
+          if (!nameEl) return;
+          const name = toJa(nameEl.textContent.trim().replace(/\s+/g, ' '));
+          if (!name || seen.has(name)) return;
           seen.add(name);
           names.push(name);
         });
-        if (names.length > 0) break;
+        return names;
       }
+
+      // フォールバック: セレクタを順番に試す（全件収集・breakなし）
+      const selectors = ['.c-ttl-2', '.c-ttl-1', '[class*="person-name"]', '[class*="member-name"]'];
+      selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+          const raw = el.textContent.trim().replace(/\s+/g, ' ');
+          if (!raw || raw.length > 30) return;
+          const name = toJa(raw) || raw;
+          if (!name || seen.has(name)) return;
+          seen.add(name);
+          names.push(name);
+        });
+      });
       return names;
     });
   } catch (e) {

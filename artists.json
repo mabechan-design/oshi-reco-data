@@ -1,45 +1,296 @@
-name: 公演情報を週1回自動取得
-
-on:
-  schedule:
-    # 毎週月曜 6:00 JST（日曜 21:00 UTC）に実行
-    - cron: '0 21 * * 0'
-  workflow_dispatch: # 手動実行ボタンも有効にする
-
-jobs:
-  scrape:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: リポジトリをチェックアウト
-        uses: actions/checkout@v4
-
-      - name: Node.js をセットアップ
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: 依存パッケージをインストール
-        run: npm install
-
-      - name: Playwright ブラウザをインストール
-        run: npx playwright install chromium --with-deps
-
-      - name: スクレイピング実行
-        run: node scraper.mjs
-
-      - name: デバッグファイルを保存
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug
-          path: debug_cast.txt
-          if-no-files-found: ignore
-
-      - name: lives.json をコミット・プッシュ
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add lives.json artists.json
-          git diff --staged --quiet || git commit -m "chore: 公演・アーティスト情報を自動更新 $(date '+%Y-%m-%d')"
-          git push
+[
+  {
+    "group": "20th Century",
+    "members": [
+      "井ノ原快彦",
+      "長野博"
+    ]
+  },
+  {
+    "group": "NEWS",
+    "members": [
+      "増田貴久",
+      "小山慶一郎"
+    ]
+  },
+  {
+    "group": "SUPER EIGHT",
+    "members": [
+      "丸山隆平",
+      "安田章大"
+    ]
+  },
+  {
+    "group": "Hey! Say! JUMP",
+    "members": [
+      "知念侑李",
+      "伊野尾慧"
+    ]
+  },
+  {
+    "group": "Kis-My-Ft2",
+    "members": [
+      "宮田俊哉",
+      "藤ヶ谷太輔",
+      "二階堂高嗣"
+    ]
+  },
+  {
+    "group": "timelesz",
+    "members": [
+      "原嘉孝",
+      "橋本将生",
+      "篠塚大輝",
+      "菊池風磨"
+    ]
+  },
+  {
+    "group": "A.B.C-Z",
+    "members": [
+      "戸塚祥太"
+    ]
+  },
+  {
+    "group": "WEST.",
+    "members": [
+      "中間淳太",
+      "小瀧望",
+      "重岡大毅"
+    ]
+  },
+  {
+    "group": "SixTONES",
+    "members": [
+      "松村北斗",
+      "京本大我",
+      "ジェシー",
+      "森本慎太郎"
+    ]
+  },
+  {
+    "group": "Snow Man",
+    "members": [
+      "目黒蓮",
+      "佐久間大介",
+      "阿部亮平",
+      "宮舘涼太",
+      "岩本照"
+    ]
+  },
+  {
+    "group": "なにわ男子",
+    "members": [
+      "長尾謙杜",
+      "道枝駿佑",
+      "高橋恭平",
+      "西畑大吾",
+      "大橋和也"
+    ]
+  },
+  {
+    "group": "Travis Japan",
+    "members": [
+      "松田元太"
+    ]
+  },
+  {
+    "group": "Aぇ! group",
+    "members": [
+      "末澤誠也",
+      "小島健"
+    ]
+  },
+  {
+    "group": "King & Prince",
+    "members": [
+      "永瀬廉",
+      "髙橋海人"
+    ]
+  },
+  {
+    "group": "ふぉ～ゆ～",
+    "members": [
+      "ふぉ～ゆ～",
+      "野澤祐樹",
+      "加藤シゲアキ",
+      "越岡裕貴",
+      "松崎祐介",
+      "辰巳雄大",
+      "出演：辰巳雄大",
+      "出演：福田悠太",
+      "主演：越岡裕貴"
+    ]
+  },
+  {
+    "group": "木村拓哉",
+    "members": [
+      "木村拓哉",
+      "木村拓哉玉森裕太正門良規",
+      "玉森裕太"
+    ]
+  },
+  {
+    "group": "堂本光一",
+    "members": [
+      "堂本光一",
+      "加藤シゲアキ",
+      "堂本光一(声優)"
+    ]
+  },
+  {
+    "group": "相葉雅紀",
+    "members": [
+      "相葉雅紀",
+      "加藤シゲアキ",
+      "嵐",
+      "櫻井翔"
+    ]
+  },
+  {
+    "group": "櫻井翔",
+    "members": [
+      "櫻井翔 髙地優吾 正門良規",
+      "櫻井翔",
+      "嵐",
+      "相葉雅紀",
+      "玉森裕太櫻井翔(第10話)"
+    ]
+  },
+  {
+    "group": "横山裕",
+    "members": [
+      "横山裕"
+    ]
+  },
+  {
+    "group": "上田竜也",
+    "members": [
+      "上田竜也",
+      "上田竜也 大西流星",
+      "Hey! Say! JUMP",
+      "主演：上田竜也 川島如恵留"
+    ]
+  },
+  {
+    "group": "中丸雄一",
+    "members": [
+      "中丸雄一"
+    ]
+  },
+  {
+    "group": "中島裕翔",
+    "members": [
+      "中島裕翔",
+      "出演：中島裕翔"
+    ]
+  },
+  {
+    "group": "内博貴",
+    "members": [
+      "内博貴",
+      "内博貴(第3話・第4話)"
+    ]
+  },
+  {
+    "group": "長谷川純",
+    "members": [
+      "長谷川純"
+    ]
+  },
+  {
+    "group": "岡本圭人",
+    "members": [
+      "岡本圭人",
+      "出演：岡本圭人",
+      "主演：岡本圭人"
+    ]
+  },
+  {
+    "group": "中島健人",
+    "members": [
+      "中島健人"
+    ]
+  },
+  {
+    "group": "河合郁人",
+    "members": [
+      "河合郁人",
+      "室龍太",
+      "増田貴久 河合郁人 松倉海斗",
+      "塚田僚一"
+    ]
+  },
+  {
+    "group": "草間リチャード敬太",
+    "members": []
+  },
+  {
+    "group": "林翔太",
+    "members": [
+      "出演：林翔太 室龍太",
+      "出演：内海光司 林翔太"
+    ]
+  },
+  {
+    "group": "室龍太",
+    "members": [
+      "河合郁人",
+      "室龍太",
+      "主演：室龍太",
+      "出演：林翔太 室龍太",
+      "出演：室龍太",
+      "田中樹"
+    ]
+  },
+  {
+    "group": "高田翔",
+    "members": [
+      "高田翔",
+      "出演：高田翔"
+    ]
+  },
+  {
+    "group": "今江大地",
+    "members": [
+      "今江大地"
+    ]
+  },
+  {
+    "group": "松本幸大",
+    "members": [
+      "出演：松本幸大",
+      "主演：松本幸大"
+    ]
+  },
+  {
+    "group": "冨岡健翔",
+    "members": [
+      "出演：冨岡健翔"
+    ]
+  },
+  {
+    "group": "野澤祐樹",
+    "members": [
+      "ふぉ～ゆ～",
+      "野澤祐樹"
+    ]
+  },
+  {
+    "group": "藤井直樹",
+    "members": []
+  },
+  {
+    "group": "内海光司",
+    "members": [
+      "出演：内海光司",
+      "出演：内海光司 林翔太"
+    ]
+  },
+  {
+    "group": "佐藤アツヒロ",
+    "members": [
+      "佐藤アツヒロ",
+      "出演：佐藤アツヒロ"
+    ]
+  }
+]

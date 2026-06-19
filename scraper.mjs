@@ -6,182 +6,96 @@ const DELAY = 2000;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// ── 1. グループ一覧を取得 ─────────────────────────────────────
+// 名前から日本語（漢字・かな）部分のみ抽出
+// 例: "青木滉平 Kohei Aoki" → "青木滉平"
+const toJaOnly = raw => {
+  const m = raw.match(/^([^\x00-\x7F]+)/);
+  return m ? m[1].trim() : raw.trim();
+};
+
+// ページをスクロールして遅延読み込みをすべて発火させる
+async function scrollToBottom(page) {
+  let prev = 0;
+  for (let i = 0; i < 30; i++) {
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await sleep(600);
+    const h = await page.evaluate(() => document.body.scrollHeight);
+    if (h === prev) break;
+    prev = h;
+  }
+}
+
+// ── 1. STARTO アーティスト一覧を取得（ID付き） ───────────────
 async function getArtistList(page) {
-  await page.goto(`${BASE}/s/p/search/artist?ima=3141&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
+  await page.goto(`${BASE}/s/p/search/artist?ima=0737&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
+  await scrollToBottom(page);
 
   return page.evaluate(() => {
     const artists = [];
     const seen    = new Set();
-
     document.querySelectorAll('.p-in_artist__list-item').forEach(li => {
-      const a = li.querySelector('a[href*="/s/p/artist/"]');
-      if (!a) return;
-
-      const href  = a.getAttribute('href') || '';
-      const match = href.match(/\/s\/p\/artist\/(\d+)/);
-      if (!match) return;
-
-      const id = match[1];
+      const a    = li.querySelector('a[href*="/s/p/artist/"]');
+      const href = a ? a.getAttribute('href') : '';
+      const m    = href && href.match(/\/s\/p\/artist\/(\d+)/);
+      if (!m) return;
+      const id = m[1];
       if (seen.has(id)) return;
       seen.add(id);
-
-      const nameEl = li.querySelector('.c-ttl-2');
+      const nameEl = li.querySelector('.c-ttl-2') || li.querySelector('.c-ttl-1');
       const name   = nameEl ? nameEl.textContent.trim() : '';
       if (!name) return;
-
       artists.push({ id, name });
     });
-
     return artists;
   });
 }
 
-// ── 2. タレント一覧からグループ→メンバーマッピングを構築 ────
-// ?data=talent ページでは各タレント名の下にグループ名がカッコ書きで表示される
-async function getTalentGroupMap(page) {
-  await page.goto(`${BASE}/s/p/search/artist?ima=2555&data=talent&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
-  await sleep(1200);
+// ── 2. アーティストページからメンバーを取得 ──────────────────
+async function getMembers(page, artistId) {
+  await page.goto(`${BASE}/s/p/artist/${artistId}?lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
+  await sleep(800);
 
-  // デバッグ: リストアイテムの構造を保存（最初の3件）
-  const debugHtml = await page.evaluate(() => {
-    const items = document.querySelectorAll('.p-in_artist__list-item');
-    if (items.length === 0) return '<p>NO ITEMS FOUND</p>';
-    return Array.from(items).slice(0, 3).map(el => el.outerHTML).join('\n\n---\n\n');
-  });
-  await fs.writeFile('debug_talent.html', debugHtml, 'utf-8');
-  console.log(`  DEBUG: debug_talent.html に保存（リストアイテム数: ${await page.evaluate(() => document.querySelectorAll('.p-in_artist__list-item').length)}）`);
-
-  return page.evaluate(() => {
-    const map = {}; // グループ名 → メンバー名[]
-
-    document.querySelectorAll('.p-in_artist__list-item').forEach(li => {
-      const nameEl = li.querySelector('.c-ttl-2');
-      const name   = nameEl ? nameEl.textContent.trim() : '';
-      if (!name) return;
-
-      // グループ名はカッコ書きで名前の下に出る要素（複数セレクタを試す）
-      const groupEl  = li.querySelector('.c-artist_card__name-hosoku')
-                    || li.querySelector('.c-subhead-2')
-                    || li.querySelector('.c-ttl-3');
-      const groupRaw = groupEl ? groupEl.textContent.trim() : '';
-      const group    = groupRaw.replace(/[()（）]/g, '').trim();
-
-      if (!group) return;
-      if (!map[group]) map[group] = [];
-      if (!map[group].includes(name)) map[group].push(name);
+  return page.evaluate(id => {
+    const members = [];
+    const seen    = new Set();
+    // data-cate がグループIDの cast アイテム = そのグループのメンバー
+    document.querySelectorAll(`.c-cast__item[data-cate="${id}"]`).forEach(item => {
+      const nameEl = item.querySelector('.c-ttl-2')
+                  || item.querySelector('.c-blog__name')
+                  || item.querySelector('[class*="name"]');
+      const name = nameEl ? nameEl.textContent.trim() : '';
+      if (!name || seen.has(name)) return;
+      seen.add(name);
+      members.push(name);
     });
-
-    return map;
-  });
+    return members;
+  }, artistId);
 }
 
-// ── 3. ジュニアグループ一覧を取得 ────────────────────────────
+// ── 2. ジュニア個人一覧を取得（漢字のみ） ────────────────────
 const JR_BASE = 'https://jr-official.starto.jp';
 
-async function getJrGroups(page) {
-  try {
-    await page.goto(`${JR_BASE}/s/jr/page/groups?ima=3026`, { waitUntil: 'networkidle', timeout: 30000 });
-    await sleep(1200);
-    return page.evaluate(() => {
-      const names = [];
-      const seen  = new Set();
-      const selectors = ['.c-ttl-2', '.c-ttl-1', '[class*="name"]', 'h2', 'h3', 'h4'];
-      for (const sel of selectors) {
-        document.querySelectorAll(sel).forEach(el => {
-          const raw = el.textContent.trim().replace(/\s+/g, ' ');
-          if (!raw || raw.length > 40) return;
-          // "グループ名 Group Name" → "グループ名"（日本語部分のみ）
-          const jaMatch = raw.match(/^([^\x00-\x7F]+)/);
-          const name = jaMatch ? jaMatch[1].trim() : raw;
-          if (!name || seen.has(name)) return;
-          seen.add(name);
-          names.push(name);
-        });
-        if (names.length > 0) break;
-      }
-      return names;
-    });
-  } catch (e) {
-    console.error(`  ✗ ジュニアグループ取得失敗: ${e.message}`);
-    return [];
-  }
-}
-
-// ── 4. ジュニア個人一覧を取得 ─────────────────────────────────
 async function getJrPersons(page) {
-  try {
-    await page.goto(`${JR_BASE}/s/jr/page/persons?ima=3009`, { waitUntil: 'networkidle', timeout: 30000 });
+  await page.goto(`${JR_BASE}/s/jr/page/persons?ima=0755`, { waitUntil: 'networkidle', timeout: 30000 });
+  await scrollToBottom(page);
 
-    // 遅延読み込みに対応：ページ末尾まで繰り返しスクロール
-    let prevCount = 0;
-    for (let i = 0; i < 20; i++) {
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await sleep(800);
-      const count = await page.evaluate(() =>
-        document.querySelectorAll('.p-in_artist__list-item, .c-artist_card, [class*="person"], [class*="artist"]').length
-      );
-      if (count === prevCount) break;
-      prevCount = count;
-    }
-    await sleep(500);
-
-    // デバッグ: ジュニア個人ページの構造を保存
-    const debugJr = await page.evaluate(() => {
-      const items = document.querySelectorAll('.p-in_artist__list-item');
-      if (items.length > 0) {
-        return `ITEMS(${items.length}):\n` + Array.from(items).slice(0, 3).map(el => el.outerHTML).join('\n---\n');
-      }
-      // アイテムが見つからない場合はページ全体のクラス一覧を返す
-      const classes = new Set();
-      document.querySelectorAll('[class]').forEach(el => {
-        el.className.split(/\s+/).forEach(c => c && classes.add(c));
-      });
-      return 'NO .p-in_artist__list-item\nCLASSES: ' + [...classes].slice(0, 60).join(', ');
+  return page.evaluate(() => {
+    const toJaOnly = raw => {
+      const m = raw.match(/^([^\x00-\x7F]+)/);
+      return m ? m[1].trim() : raw.trim();
+    };
+    const names = [];
+    const seen  = new Set();
+    document.querySelectorAll('.p-in_artist__list-item').forEach(li => {
+      const nameEl = li.querySelector('.c-ttl-2') || li.querySelector('.c-ttl-1');
+      if (!nameEl) return;
+      const name = toJaOnly(nameEl.textContent.trim().replace(/\s+/g, ' '));
+      if (!name || seen.has(name)) return;
+      seen.add(name);
+      names.push(name);
     });
-    await fs.writeFile('debug_jr_persons.html', debugJr, 'utf-8');
-    console.log('  DEBUG: debug_jr_persons.html を保存');
-
-    return page.evaluate(() => {
-      const toJa = raw => {
-        const m = raw.match(/^([^\x00-\x7F]+)/);
-        return m ? m[1].trim() : '';
-      };
-      const names = [];
-      const seen  = new Set();
-
-      // まず .p-in_artist__list-item 内の .c-ttl-2 を狙い打ち
-      const items = document.querySelectorAll('.p-in_artist__list-item');
-      if (items.length > 0) {
-        items.forEach(li => {
-          const nameEl = li.querySelector('.c-ttl-2') || li.querySelector('.c-ttl-1');
-          if (!nameEl) return;
-          const name = toJa(nameEl.textContent.trim().replace(/\s+/g, ' '));
-          if (!name || seen.has(name)) return;
-          seen.add(name);
-          names.push(name);
-        });
-        return names;
-      }
-
-      // フォールバック: セレクタを順番に試す（全件収集・breakなし）
-      const selectors = ['.c-ttl-2', '.c-ttl-1', '[class*="person-name"]', '[class*="member-name"]'];
-      selectors.forEach(sel => {
-        document.querySelectorAll(sel).forEach(el => {
-          const raw = el.textContent.trim().replace(/\s+/g, ' ');
-          if (!raw || raw.length > 30) return;
-          const name = toJa(raw) || raw;
-          if (!name || seen.has(name)) return;
-          seen.add(name);
-          names.push(name);
-        });
-      });
-      return names;
-    });
-  } catch (e) {
-    console.error(`  ✗ ジュニア個人取得失敗: ${e.message}`);
-    return [];
-  }
+    return names;
+  });
 }
 
 // ── 5. 公演一覧を取得 ────────────────────────────────────────
@@ -315,39 +229,32 @@ async function main() {
   const page    = await browser.newPage();
   await page.setExtraHTTPHeaders({ 'Accept-Language': 'ja,en;q=0.9' });
 
-  // ── アーティスト情報 ──────────────────────────────────────
-  console.log('👥 グループ一覧を取得中...');
+  // ── STARTO アーティスト ───────────────────────────────────
+  console.log('👥 STARTOアーティスト一覧を取得中...');
   const artistList = await getArtistList(page);
-  console.log(`✅ ${artistList.length} グループ/アーティストを発見`);
+  console.log(`✅ ${artistList.length} 件`);
 
-  console.log('👤 タレント一覧からメンバーマッピングを取得中...');
-  const talentGroupMap = await getTalentGroupMap(page);
-  console.log(`✅ ${Object.keys(talentGroupMap).length} グループのメンバー情報を取得`);
+  console.log('👤 各アーティストページからメンバーを取得中...');
+  const artists = [];
+  for (const { id, name } of artistList) {
+    const members = await getMembers(page, id);
+    console.log(`  ${name}（${id}）: ${members.length > 0 ? members.join(', ') : 'ソロ'}`);
+    artists.push({ group: name, members });
+    await sleep(DELAY);
+  }
 
-  const artists = artistList.map(a => {
-    const members = talentGroupMap[a.name] || [];
-    console.log(`  ${a.name}: ${members.length > 0 ? members.join(', ') : 'ソロ'}`);
-    return { group: a.name, members };
-  });
-
-  // ── ジュニア情報 ──────────────────────────────────────────
-  console.log('\n🎤 ジュニアグループを取得中...');
-  const jrGroups = await getJrGroups(page);
-  console.log(`✅ ${jrGroups.length} グループ: ${jrGroups.join(', ')}`);
-
-  console.log('👤 ジュニア個人を取得中...');
+  // ── ジュニア個人 ──────────────────────────────────────────
+  console.log('\n👤 ジュニア個人一覧を取得中...');
   const jrPersons = await getJrPersons(page);
   console.log(`✅ ${jrPersons.length} 名`);
+  jrPersons.forEach(n => console.log(`  ${n}`));
 
-  // グループ・個人ともにメンバー紐づけなし（members: []）で追加
-  const jrEntries = [
-    ...jrGroups.map(name => ({ group: name, members: [] })),
+  const allArtists = [
+    ...artists,
     ...jrPersons.map(name => ({ group: name, members: [] })),
   ];
-
-  const allArtists = [...artists, ...jrEntries];
   await fs.writeFile('artists.json', JSON.stringify(allArtists, null, 2), 'utf-8');
-  console.log(`\n✅ アーティスト ${allArtists.length} 件（うちジュニア ${jrEntries.length} 件）を artists.json に保存`);
+  console.log(`\n✅ 合計 ${allArtists.length} 件（STARTO ${artists.length} + ジュニア ${jrPersons.length}）を artists.json に保存`);
 
   // ── 公演情報 ──────────────────────────────────────────────
   console.log('\n📋 公演一覧を取得中...');

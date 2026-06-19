@@ -40,28 +40,70 @@ async function getArtistList(page) {
 // ── 2. アーティスト詳細ページからメンバーを取得 ─────────────
 async function getArtistMembers(page, artist) {
   try {
+    // ── メインページ ──
     await page.goto(`${BASE}/s/p/artist/${artist.id}`, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(1200);
 
-    return page.evaluate((artistName) => {
+    const fromMain = await page.evaluate(() => {
       const txt = el => el?.textContent?.trim() || '';
-      const members = [];
-      // グループ名自体を除外
+      // グループ名はH1から取得（WOVNによる翻訳前の正確な名前）
+      const artistName = txt(document.querySelector('.l-a_header__ttl .c-ttl-1'));
       const seen = new Set([artistName.replace(/\s/g, '')]);
+      const members = [];
 
-      // BLOGセクションの .c-blog__name にはグループメンバー名が列挙される
-      // サイト共通ナビの全アーティスト一覧とは別セクションなので混在しない
-      // ソロアーティストは自分の名前が除外されて空配列になる
-      document.querySelectorAll('.p-blog__btn-item .c-blog__name').forEach(el => {
-        const name = txt(el).replace(/\n/g, '').trim();
-        const nameNorm = name.replace(/\s/g, '');
-        if (!name || seen.has(nameNorm)) return;
-        seen.add(nameNorm);
-        members.push(name);
-      });
+      const add = (raw) => {
+        const name = raw.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+        const norm = name.replace(/\s/g, '');
+        if (name && norm.length > 1 && !seen.has(norm)) {
+          seen.add(norm);
+          members.push(name);
+        }
+      };
 
-      return members;
-    }, artist.name);
+      // ① BLOGセクション（ブログを持つメンバーの名前）
+      document.querySelectorAll('.p-blog__btn-item .c-blog__name').forEach(el => add(txt(el)));
+
+      // ② スケジュール内キャスト（data-cateがグループIDのもの＝個別メンバー）
+      const artistId = document.body.dataset.artist;
+      document.querySelectorAll(`main .c-cast__item[data-cate="${artistId}"]`).forEach(el => add(txt(el)));
+
+      return { members, artistName };
+    });
+
+    // ── プロフィールページ（バイオ情報からメンバー補完）──
+    await page.goto(`${BASE}/s/p/artist/${artist.id}/profile`, { waitUntil: 'networkidle', timeout: 30000 });
+    await sleep(1000);
+
+    const fromProfile = await page.evaluate((existing) => {
+      const txt = el => el?.textContent?.trim() || '';
+      const seen = new Set(existing.map(n => n.replace(/\s/g, '')));
+      const newMembers = [];
+
+      const add = (raw) => {
+        const name = raw.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+        const norm = name.replace(/\s/g, '');
+        if (name && norm.length > 1 && !seen.has(norm)) {
+          seen.add(norm);
+          newMembers.push(name);
+        }
+      };
+
+      // バイオリスト（プロフィールページのメンバー表）
+      document.querySelectorAll('.p-in_bio__list-item').forEach(el => add(txt(el)));
+
+      // BLOGセクション（プロフィールページにも同じ構造がある場合）
+      document.querySelectorAll('.p-blog__btn-item .c-blog__name').forEach(el => add(txt(el)));
+
+      // スケジュールキャスト
+      const artistId = document.body.dataset.artist;
+      document.querySelectorAll(`main .c-cast__item[data-cate="${artistId}"]`).forEach(el => add(txt(el)));
+
+      return newMembers;
+    }, fromMain.members);
+
+    const all = [...fromMain.members, ...fromProfile];
+    console.log(`  → ${all.length > 0 ? all.join(', ') : 'ソロ'}`);
+    return all;
   } catch (e) {
     console.error(`  ✗ ${artist.name} メンバー取得失敗: ${e.message}`);
     return [];
@@ -210,7 +252,6 @@ async function main() {
     console.log(`[${i + 1}/${artistList.length}] ${artist.name} のメンバーを取得中...`);
     const members = await getArtistMembers(page, artist);
     artists.push({ group: artist.name, members });
-    console.log(`  → ${members.length > 0 ? members.join(', ') : 'ソロ'}`);
     await sleep(DELAY);
   }
 

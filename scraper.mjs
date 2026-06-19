@@ -43,13 +43,18 @@ async function getArtistMembers(page, artist) {
     await page.goto(`${BASE}/s/p/artist/${artist.id}`, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(1200);
 
+    // 最初の1件だけHTMLをファイルに保存してデバッグ
+    if (artist.id === '57') {
+      const html = await page.content();
+      await fs.writeFile('debug_artist.html', html, 'utf-8');
+      console.log('  → debug_artist.html に保存しました');
+    }
+
     return page.evaluate((artistName) => {
       const txt = el => el?.textContent?.trim() || '';
-
       const members = [];
-      const seen    = new Set([artistName.replace(/\s/g, '')]);
+      const seen = new Set([artistName.replace(/\s/g, '')]);
 
-      // メンバーはアーティストページへのリンク内にある名前のみ取得
       document.querySelectorAll('a[href*="/s/p/artist/"] .c-ttl-2').forEach(el => {
         const name = txt(el).replace(/\s+/g, '');
         if (!name || seen.has(name)) return;

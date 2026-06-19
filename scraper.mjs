@@ -51,20 +51,49 @@ async function getArtistList(page) {
 }
 
 // ── 2. アーティストページからメンバーを取得 ──────────────────
+let debugSaved = false;
+
 async function getMembers(page, artistId) {
   await page.goto(`${BASE}/s/p/artist/${artistId}?lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
   await sleep(800);
 
+  // 最初の1件だけ cast 構造をデバッグ保存
+  if (!debugSaved) {
+    debugSaved = true;
+    const debugInfo = await page.evaluate(() => {
+      const bodyArtist = document.body.dataset.artist || '(none)';
+      const allCast = Array.from(document.querySelectorAll('.c-cast__item'));
+      const castInfo = allCast.slice(0, 10).map(el =>
+        `data-cate="${el.dataset.cate}" text="${el.textContent.trim().slice(0,40)}"`
+      ).join('\n');
+      return `body[data-artist]=${bodyArtist}\ncast items(${allCast.length}):\n${castInfo || '(none)'}`;
+    });
+    await fs.writeFile('debug_cast.txt', debugInfo, 'utf-8');
+    console.log('  DEBUG: debug_cast.txt を保存');
+  }
+
   return page.evaluate(id => {
     const members = [];
     const seen    = new Set();
-    // data-cate がグループIDの cast アイテム = そのグループのメンバー
-    document.querySelectorAll(`.c-cast__item[data-cate="${id}"]`).forEach(item => {
+
+    // body の data-artist でページ上の実際のIDを確認
+    const pageId = document.body.dataset.artist || id;
+
+    // data-cate がグループID の cast アイテム = メンバー
+    const items = document.querySelectorAll(`.c-cast__item[data-cate="${pageId}"]`);
+
+    // フォールバック: data-cate="group" 以外の全 cast アイテム
+    const targets = items.length > 0
+      ? items
+      : document.querySelectorAll('.c-cast__item:not([data-cate="group"])');
+
+    targets.forEach(item => {
       const nameEl = item.querySelector('.c-ttl-2')
                   || item.querySelector('.c-blog__name')
+                  || item.querySelector('a')
                   || item.querySelector('[class*="name"]');
-      const name = nameEl ? nameEl.textContent.trim() : '';
-      if (!name || seen.has(name)) return;
+      const name = (nameEl ? nameEl.textContent : item.textContent).trim().replace(/\s+/g, ' ');
+      if (!name || name.length > 15 || seen.has(name)) return;
       seen.add(name);
       members.push(name);
     });
@@ -226,8 +255,15 @@ async function getDetail(page, item) {
 // ── メイン ────────────────────────────────────────────────────
 async function main() {
   const browser = await chromium.launch({ headless: true });
-  const page    = await browser.newPage();
+  const context = await browser.newContext();
+  const page    = await context.newPage();
   await page.setExtraHTTPHeaders({ 'Accept-Language': 'ja,en;q=0.9' });
+
+  // WOVN を日本語に固定（&lang=ja が効かないURLでも日本語にする）
+  await context.addCookies([
+    { name: 'wovn_selected_lang', value: 'ja', domain: 'starto.jp',             path: '/' },
+    { name: 'wovn_selected_lang', value: 'ja', domain: 'jr-official.starto.jp', path: '/' },
+  ]);
 
   // ── STARTO アーティスト ───────────────────────────────────
   console.log('👥 STARTOアーティスト一覧を取得中...');

@@ -17,7 +17,7 @@ jobs:
       - name: Node.js をセットアップ
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: 依存パッケージをインストール
         run: npm install
@@ -27,6 +27,16 @@ jobs:
 
       - name: スクレイピング実行
         run: node scraper.mjs
+
+      - name: デバッグファイルをアーティファクトとして保存
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-html
+          path: |
+            debug_talent.html
+            debug_jr_persons.html
+          if-no-files-found: ignore
 
       - name: lives.json をコミット・プッシュ
         run: |

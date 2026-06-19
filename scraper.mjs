@@ -43,23 +43,21 @@ async function getArtistMembers(page, artist) {
     await page.goto(`${BASE}/s/p/artist/${artist.id}`, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(1200);
 
-    // 最初の1件だけHTMLをファイルに保存してデバッグ
-    if (artist.id === '57') {
-      const html = await page.content();
-      await fs.writeFile('debug_artist.html', html, 'utf-8');
-      console.log('  → debug_artist.html に保存しました');
-    }
-
     return page.evaluate((artistName) => {
       const txt = el => el?.textContent?.trim() || '';
       const members = [];
+      // グループ名自体を除外
       const seen = new Set([artistName.replace(/\s/g, '')]);
 
-      document.querySelectorAll('a[href*="/s/p/artist/"] .c-ttl-2').forEach(el => {
-        const name = txt(el).replace(/\s+/g, '');
-        if (!name || seen.has(name)) return;
-        seen.add(name);
-        members.push(txt(el).trim());
+      // BLOGセクションの .c-blog__name にはグループメンバー名が列挙される
+      // サイト共通ナビの全アーティスト一覧とは別セクションなので混在しない
+      // ソロアーティストは自分の名前が除外されて空配列になる
+      document.querySelectorAll('.p-blog__btn-item .c-blog__name').forEach(el => {
+        const name = txt(el).replace(/\n/g, '').trim();
+        const nameNorm = name.replace(/\s/g, '');
+        if (!name || seen.has(nameNorm)) return;
+        seen.add(nameNorm);
+        members.push(name);
       });
 
       return members;

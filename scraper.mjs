@@ -49,8 +49,8 @@ async function getArtistMembers(page, artist) {
       const members = [];
       const seen    = new Set([artistName.replace(/\s/g, '')]);
 
-      // アーティスト一覧と同じ .c-ttl-2 クラスでメンバー名が列挙されている
-      document.querySelectorAll('.c-ttl-2').forEach(el => {
+      // メンバーはアーティストページへのリンク内にある名前のみ取得
+      document.querySelectorAll('a[href*="/s/p/artist/"] .c-ttl-2').forEach(el => {
         const name = txt(el).replace(/\s+/g, '');
         if (!name || seen.has(name)) return;
         seen.add(name);

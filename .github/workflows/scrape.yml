@@ -33,7 +33,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: debug-talent
-          path: debug_talent.html
+          path: |
+            debug_talent.html
+            debug_artistlist.txt
           if-no-files-found: ignore
 
       - name: lives.json をコミット・プッシュ

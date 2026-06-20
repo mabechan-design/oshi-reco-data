@@ -178,17 +178,16 @@ async function getList(page, url, category) {
       const href  = a.getAttribute('href') || '';
       const match = href.match(/\/s\/p\/live\/(\d+)/);
       if (!match || seen.has(match[1])) return;
-      seen.add(match[1]);
 
-      // カードのコンテナを探してタイトルとアーティスト名を取得
-      let container = a;
-      for (let i = 0; i < 6; i++) {
-        if (container.parentElement) container = container.parentElement;
-      }
-      const titleEl  = container.querySelector('.c-ttl-2');
-      const artistEl = container.querySelector('.c-text-3');
-      const title  = titleEl  ? titleEl.textContent.trim()  : '';
-      const artist = artistEl ? artistEl.textContent.trim() : '';
+      // <a> タグ自体がカードをラップしている前提でタイトルと artist を取得
+      const titleEl  = a.querySelector('.c-ttl-2');
+      const artistEl = a.querySelector('.c-text-3');
+      if (!titleEl) return; // タイトルのないナビリンクは除外
+
+      seen.add(match[1]);
+      const title  = titleEl.textContent.trim();
+      // 「出演：」「主演：」などのプレフィックスを除去
+      const artist = (artistEl ? artistEl.textContent.trim() : '').replace(/^[^：:]+[：:]/, '').trim();
 
       items.push({ id: match[1], href: `/s/p/live/${match[1]}`, category: cat, title, artist });
     });

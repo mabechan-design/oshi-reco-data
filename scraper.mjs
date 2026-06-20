@@ -29,7 +29,8 @@ async function getArtistList(page) {
     document.querySelectorAll('.p-in_artist__list-item').forEach(li => {
       const a    = li.querySelector('a[href*="/s/p/artist/"]');
       const href = a ? a.getAttribute('href') : '';
-      const m    = href && href.match(/\/s\/p\/artist\/(\d+)/);
+      // 数字IDだけでなく文字列IDも対応（例: /s/p/artist/domoto）
+      const m    = href && href.match(/\/s\/p\/artist\/([^/?#]+)/);
       if (!m) return;
       const id = m[1];
       if (seen.has(id)) return;

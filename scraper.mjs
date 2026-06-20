@@ -4,6 +4,11 @@ import fs from 'fs/promises';
 const BASE  = 'https://starto.jp';
 const DELAY = 2000;
 
+// starto.jp に個別ページがなく自動取得できないアーティスト
+const MANUAL_ARTISTS = [
+  { group: 'DOMOTO', members: ['堂本光一', '堂本剛'] },
+];
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ページ末尾まで繰り返しスクロールして遅延読み込みをすべて発火
@@ -22,20 +27,6 @@ async function scrollToBottom(page) {
 async function getArtistList(page) {
   await page.goto(`${BASE}/s/p/search/artist?ima=0737&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
   await scrollToBottom(page);
-
-  // デバッグ: 全リストアイテムの href と名前を保存
-  const debugInfo = await page.evaluate(() => {
-    const lines = [];
-    document.querySelectorAll('.p-in_artist__list-item').forEach((li, i) => {
-      const a    = li.querySelector('a');
-      const href = a ? a.getAttribute('href') : '(no link)';
-      const name = li.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
-      lines.push(`[${i}] href="${href}" name="${name}"`);
-    });
-    return `total: ${lines.length}\n` + lines.join('\n');
-  });
-  await fs.writeFile('debug_artistlist.txt', debugInfo, 'utf-8');
-  console.log('  DEBUG: debug_artistlist.txt を保存');
 
   return page.evaluate(() => {
     const artists = [];
@@ -259,8 +250,9 @@ async function main() {
     return { group: name, members };
   });
 
-  await fs.writeFile('artists.json', JSON.stringify(artists, null, 2), 'utf-8');
-  console.log(`\n✅ ${artists.length} 件を artists.json に保存`);
+  const allArtists = [...artists, ...MANUAL_ARTISTS];
+  await fs.writeFile('artists.json', JSON.stringify(allArtists, null, 2), 'utf-8');
+  console.log(`\n✅ ${allArtists.length} 件を artists.json に保存（手動追加 ${MANUAL_ARTISTS.length} 件含む）`);
 
   // ── 公演情報
   console.log('\n📋 公演一覧を取得中...');

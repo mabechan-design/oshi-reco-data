@@ -9,6 +9,67 @@ const MANUAL_ARTISTS = [
   { group: 'DOMOTO', members: ['堂本光一', '堂本剛'] },
 ];
 
+// タイトル文字列からアーティスト名を判定するマッピング（長い/具体的なものを先に）
+const ARTIST_TITLE_MAP = [
+  ['MILESixTONES',      'SixTONES'],
+  ['SixTONES',          'SixTONES'],
+  ['Hey! Say! JUMP',    'Hey! Say! JUMP'],
+  ['Kis-My-Ft2',        'Kis-My-Ft2'],
+  ['KIS-MY-FT2',        'Kis-My-Ft2'],
+  ['A.B.C-Z',           'A.B.C-Z'],
+  ['Snow Man',          'Snow Man'],
+  ['SNOW MAN',          'Snow Man'],
+  ['Travis Japan',      'Travis Japan'],
+  ['Aぇ! group',        'Aぇ! group'],
+  ['なにわ男子',         'なにわ男子'],
+  ['SUPER EIGHT',       'SUPER EIGHT'],
+  ['20th Century',      '20th Century'],
+  ['WEST.',             'WEST.'],
+  ['timelesz',          'timelesz'],
+  ['DOMOTO',            'DOMOTO'],
+  ['King & Prince',     'King & Prince'],
+  ['ふぉ～ゆ～',         'ふぉ～ゆ～'],
+  ['ふぉ〜ゆ〜',         'ふぉ～ゆ～'],
+  ['TAKUYA KIMURA',     '木村拓哉'],
+  ['木村拓哉',           '木村拓哉'],
+  ['Ryosuke Yamada',    '山田涼介'],
+  ['山田涼介',           '山田涼介'],
+  ['KENTY',             '中島健人'],
+  ['中島健人',           '中島健人'],
+  ['堂本光一',           '堂本光一'],
+  ['堂本剛',             '堂本剛'],
+  ['相葉雅紀',           '相葉雅紀'],
+  ['櫻井翔',             '櫻井翔'],
+  ['横山裕',             '横山裕'],
+  ['上田竜也',           '上田竜也'],
+  ['中丸雄一',           '中丸雄一'],
+  ['中島裕翔',           '中島裕翔'],
+  ['内博貴',             '内博貴'],
+  ['長谷川純',           '長谷川純'],
+  ['岡本圭人',           '岡本圭人'],
+  ['河合郁人',           '河合郁人'],
+  ['草間リチャード敬太',  '草間リチャード敬太'],
+  ['林翔太',             '林翔太'],
+  ['室龍太',             '室龍太'],
+  ['高田翔',             '高田翔'],
+  ['今江大地',           '今江大地'],
+  ['松本幸大',           '松本幸大'],
+  ['冨岡健翔',           '冨岡健翔'],
+  ['野澤祐樹',           '野澤祐樹'],
+  ['藤井直樹',           '藤井直樹'],
+  ['内海光司',           '内海光司'],
+  ['佐藤アツヒロ',        '佐藤アツヒロ'],
+  ['戸塚祥太',           '戸塚祥太'],
+  ['NEWS',              'NEWS'],
+];
+
+function guessArtistFromTitle(title) {
+  for (const [variant, artistName] of ARTIST_TITLE_MAP) {
+    if (title.includes(variant)) return artistName;
+  }
+  return '';
+}
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ページ末尾まで繰り返しスクロールして遅延読み込みをすべて発火
@@ -98,47 +159,41 @@ async function buildMemberMap(page) {
   });
 }
 
-// ── 3. 公演一覧を取得
-async function getList(page) {
-  await page.goto(`${BASE}/s/p/live`, { waitUntil: 'networkidle', timeout: 30000 });
+// カテゴリ別の取得URL
+const LIVE_TARGETS = [
+  { url: `${BASE}/s/p/live?ima=4135&ct=concert`, category: 'CONCERT' },
+  { url: `${BASE}/s/p/live?ima=4245&ct=stage`,   category: 'STAGE'   },
+  { url: `${BASE}/s/p/live?ima=4135&ct=event`,   category: 'EVENT'   },
+];
 
-  return page.evaluate(() => {
+// ── 3. 公演一覧を取得（カテゴリ別URL・アーティスト名は一覧カードの .c-text-3 から）
+async function getList(page, url, category) {
+  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+  await scrollToBottom(page);
+
+  return page.evaluate(cat => {
     const items = [];
     const seen  = new Set();
-
     document.querySelectorAll('a[href]').forEach(a => {
       const href  = a.getAttribute('href') || '';
       const match = href.match(/\/s\/p\/live\/(\d+)/);
       if (!match || seen.has(match[1])) return;
       seen.add(match[1]);
 
+      // カードのコンテナを探してタイトルとアーティスト名を取得
       let container = a;
       for (let i = 0; i < 6; i++) {
         if (container.parentElement) container = container.parentElement;
       }
-      const text = container.textContent || '';
+      const titleEl  = container.querySelector('.c-ttl-2');
+      const artistEl = container.querySelector('.c-text-3');
+      const title  = titleEl  ? titleEl.textContent.trim()  : '';
+      const artist = artistEl ? artistEl.textContent.trim() : '';
 
-      const dateMatch = text.match(
-        /(\d{4}\.\d{2}\.\d{2})\s*[-～~]\s*(\d{4}\.\d{2}\.\d{2})|(\d{4}\.\d{2}\.\d{2})/
-      );
-      const date = dateMatch
-        ? dateMatch[1] && dateMatch[2]
-          ? `${dateMatch[1]}-${dateMatch[2]}`
-          : dateMatch[3] || ''
-        : '';
-
-      const catMatch = text.match(/CONCERT|STAGE|EVENT/);
-
-      items.push({
-        id:       match[1],
-        href:     `/s/p/live/${match[1]}`,
-        date,
-        category: catMatch ? catMatch[0] : 'CONCERT',
-      });
+      items.push({ id: match[1], href: `/s/p/live/${match[1]}`, category: cat, title, artist });
     });
-
     return items;
-  });
+  }, category);
 }
 
 // ── 4. 公演詳細ページから会場・日程・タイトル・アーティストを取得
@@ -147,23 +202,8 @@ async function getDetail(page, item) {
     await page.goto(`${BASE}${item.href}`, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(1200);
 
-    return page.evaluate(item => {
+    const raw = await page.evaluate(() => {
       const txt = el => el?.textContent?.trim() || '';
-
-      const title =
-        txt(document.querySelector('h1')) ||
-        txt(document.querySelector('h2')) ||
-        '';
-
-      const artistCandidates = [
-        document.querySelector('[class*="artist"]'),
-        document.querySelector('[class*="name"]'),
-        document.querySelector('h3'),
-        document.querySelector('h2 + p'),
-        document.querySelector('h1 + p'),
-      ];
-      const artistEl   = artistCandidates.find(el => el && txt(el).length > 0);
-      const artistName = txt(artistEl);
 
       const venues = [];
       const dateRe = /(\d{4}[./]\d{1,2}[./]\d{1,2})/;
@@ -202,24 +242,32 @@ async function getDetail(page, item) {
         }
       }
 
-      return {
-        title:    title || '',
-        date:     item.date,
-        category: item.category,
-        venues,
-        artists:  artistName ? [artistName] : [],
-      };
-    }, item);
+      return { venues };
+    });
+
+    const { venues } = raw;
+
+    // venues の最小・最大日付からツアー期間を計算
+    const dates = venues.map(v => v.date).filter(Boolean).sort();
+    const date  = dates.length === 0 ? ''
+      : dates.length === 1           ? dates[0]
+      : `${dates[0]}-${dates[dates.length - 1]}`;
+
+    // 一覧ページから取得済みのタイトル・アーティスト名を使用
+    // アーティストが取得できなかった場合のみタイトルマッチングで補完
+    const artistName = item.artist || guessArtistFromTitle(item.title);
+
+    return {
+      title:    item.title,
+      date,
+      category: item.category,
+      venues,
+      artists:  artistName ? [artistName] : [],
+    };
 
   } catch (e) {
     console.error(`  ✗ ${item.href} 取得失敗: ${e.message}`);
-    return {
-      title:    '',
-      date:     item.date,
-      category: item.category,
-      venues:   [],
-      artists:  [],
-    };
+    return { title: item.title, date: '', category: item.category, venues: [], artists: item.artist ? [item.artist] : [] };
   }
 }
 
@@ -254,10 +302,16 @@ async function main() {
   await fs.writeFile('artists.json', JSON.stringify(allArtists, null, 2), 'utf-8');
   console.log(`\n✅ ${allArtists.length} 件を artists.json に保存（手動追加 ${MANUAL_ARTISTS.length} 件含む）`);
 
-  // ── 公演情報
+  // ── 公演情報（カテゴリ別URLから重複なしで収集）
   console.log('\n📋 公演一覧を取得中...');
-  const list = await getList(page);
-  console.log(`✅ ${list.length} 件の公演を発見`);
+  const seenIds = new Set();
+  const list = [];
+  for (const { url, category } of LIVE_TARGETS) {
+    const items = await getList(page, url, category);
+    items.forEach(item => { if (!seenIds.has(item.id)) { seenIds.add(item.id); list.push(item); } });
+    console.log(`  ${category}: ${items.length} 件`);
+  }
+  console.log(`✅ 合計 ${list.length} 件の公演を発見`);
 
   const lives = [];
   for (let i = 0; i < list.length; i++) {

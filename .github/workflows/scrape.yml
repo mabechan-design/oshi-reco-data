@@ -28,16 +28,6 @@ jobs:
       - name: スクレイピング実行
         run: node scraper.mjs
 
-      - name: デバッグHTML を保存
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-talent
-          path: |
-            debug_talent.html
-            debug_artistlist.txt
-          if-no-files-found: ignore
-
       - name: lives.json をコミット・プッシュ
         run: |
           git config user.name  "github-actions[bot]"

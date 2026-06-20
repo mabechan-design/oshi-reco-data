@@ -44,10 +44,19 @@ async function getArtistList(page) {
 }
 
 // ── 2. タレント一覧ページからグループ→メンバーのマップを構築
-// 各カードの名前の外側テキスト（カッコ書き）でグループ名を検出する
 async function buildMemberMap(page) {
   await page.goto(`${BASE}/s/p/search/artist?ima=2555&data=talent&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
   await scrollToBottom(page);
+
+  // デバッグ: 最初の3件のHTML構造を保存
+  const debugHtml = await page.evaluate(() => {
+    const items = document.querySelectorAll('.p-in_artist__list-item');
+    if (items.length === 0) return `NO .p-in_artist__list-item (total elements: ${document.querySelectorAll('*').length})`;
+    return `FOUND: ${items.length} items\n\n` +
+      Array.from(items).slice(0, 3).map(el => el.outerHTML).join('\n\n---\n\n');
+  });
+  await fs.writeFile('debug_talent.html', debugHtml, 'utf-8');
+  console.log('  DEBUG: debug_talent.html を保存');
 
   return page.evaluate(() => {
     const map = {};
@@ -56,12 +65,27 @@ async function buildMemberMap(page) {
       const name   = nameEl ? nameEl.textContent.trim() : '';
       if (!name) return;
 
-      // li 全体のテキストから名前部分を除いた残りでカッコ書きを探す
-      const rest  = li.textContent.replace(name, '');
-      const parenM = rest.match(/[（(]([^）)]+)[）)]/);
-      const group  = parenM ? parenM[1].trim() : '';
-      if (!group) return;
+      // 戦略1: .c-artist_card__name-hosoku（CSSでカッコが付く可能性があるため中身だけ取る）
+      const hosokuEl = li.querySelector('.c-artist_card__name-hosoku');
+      let group = hosokuEl ? hosokuEl.textContent.trim().replace(/[()（）]/g, '').trim() : '';
 
+      // 戦略2: li全体テキストのカッコ書き
+      if (!group) {
+        const rest = li.textContent.replace(name, '');
+        const m = rest.match(/[（(]([^）)]+)[）)]/);
+        group = m ? m[1].trim() : '';
+      }
+
+      // 戦略3: 名前以外のリーフ要素テキスト
+      if (!group) {
+        Array.from(li.querySelectorAll('*')).forEach(el => {
+          if (group || el.children.length > 0) return;
+          const t = el.textContent.trim().replace(/[()（）]/g, '').trim();
+          if (t && t !== name && t.length > 1 && t.length < 30) group = t;
+        });
+      }
+
+      if (!group) return;
       if (!map[group]) map[group] = [];
       if (!map[group].includes(name)) map[group].push(name);
     });

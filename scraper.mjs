@@ -179,15 +179,26 @@ async function getList(page, url, category) {
       const match = href.match(/\/s\/p\/live\/(\d+)/);
       if (!match || seen.has(match[1])) return;
 
-      // <a> タグ自体がカードをラップしている前提でタイトルと artist を取得
-      const titleEl  = a.querySelector('.c-ttl-2');
-      const artistEl = a.querySelector('.c-text-3');
-      if (!titleEl) return; // タイトルのないナビリンクは除外
+      // まず <a> 内から探す（<a>がカード全体をラップしている場合）
+      let titleEl  = a.querySelector('.c-ttl-2');
+      let artistEl = a.querySelector('.c-text-3');
 
+      // 見つからない場合は親要素をさかのぼる（STAGEなど <a> がカード内リンクの場合）
+      if (!titleEl) {
+        let el = a.parentElement;
+        for (let i = 0; i < 6 && el; i++, el = el.parentElement) {
+          const t = el.querySelector('.c-ttl-2');
+          if (t) { titleEl = t; artistEl = el.querySelector('.c-text-3'); break; }
+        }
+      }
+
+      if (!titleEl) return;
       seen.add(match[1]);
+
       const title  = titleEl.textContent.trim();
-      // 「出演：」「主演：」などのプレフィックスを除去
-      const artist = (artistEl ? artistEl.textContent.trim() : '').replace(/^[^：:]+[：:]/, '').trim();
+      // 最初の行だけ使い「出演：」「主演：」などのプレフィックスを除去
+      const rawArtist = artistEl ? artistEl.textContent.trim() : '';
+      const artist = rawArtist.split('\n')[0].trim().replace(/^[^：:]+[：:]/, '').trim();
 
       items.push({ id: match[1], href: `/s/p/live/${match[1]}`, category: cat, title, artist });
     });
@@ -204,40 +215,60 @@ async function getDetail(page, item) {
     const raw = await page.evaluate(() => {
       const txt = el => el?.textContent?.trim() || '';
 
+      // YYYY.MM.DD / YYYY/MM/DD / YYYY年M月D日 のいずれにもマッチ
+      const dateRe = /(\d{4})[./年](\d{1,2})[./月](\d{1,2})[日]?/;
+
+      function normalizeDate(raw) {
+        const m = raw.match(/(\d{4})[./年](\d{1,2})[./月](\d{1,2})/);
+        if (!m) return '';
+        return `${m[1]}.${m[2].padStart(2, '0')}.${m[3].padStart(2, '0')}`;
+      }
+
       const venues = [];
-      const dateRe = /(\d{4}[./]\d{1,2}[./]\d{1,2})/;
-
       const allEls = Array.from(document.querySelectorAll('*'));
-      const scheduleHeader = allEls.find(el =>
-        /^schedule$/i.test(txt(el)) && el.tagName.match(/^H[1-6]$/)
-      );
 
-      const targets = scheduleHeader
-        ? Array.from(scheduleHeader.parentElement?.children || [])
+      // スケジュール見出し（英語・日本語両対応、heading 以外の太字テキストも考慮）
+      const scheduleHeader = allEls.find(el => {
+        if (!el.tagName.match(/^H[1-6]$/) && el.tagName !== 'P' && el.tagName !== 'DIV') return false;
+        if (el.children.length > 2) return false; // 子が多いコンテナは除外
+        return /^(schedule|スケジュール|日程|公演日程|公演スケジュール)$/i.test(txt(el));
+      });
+
+      // 見出しがある場合はその親要素の兄弟をスキャン、なければページ全体
+      const scanTargets = scheduleHeader
+        ? Array.from(scheduleHeader.parentElement?.children || allEls)
         : allEls;
 
       let inSchedule = !scheduleHeader;
-      for (const el of targets) {
+      const addedDates = new Set();
+
+      for (const el of scanTargets) {
         if (el === scheduleHeader) { inSchedule = true; continue; }
         if (!inSchedule) continue;
+        // 次の見出しが来たら終了
         if (scheduleHeader && el !== scheduleHeader && el.tagName?.match(/^H[1-6]$/)) break;
 
-        const rows     = el.querySelectorAll('tr, li, [class*="item"], [class*="row"], [class*="schedule-"]');
+        const rows = el.querySelectorAll('tr, li, [class*="item"], [class*="row"], [class*="schedule"]');
         const targets2 = rows.length > 0 ? Array.from(rows) : [el];
 
         for (const row of targets2) {
+          // 子要素を持つコンテナは個別にスキャンするのでここではスキップ
+          if (targets2.length > 1 && row.querySelector('tr, li')) continue;
+
           const rowText   = txt(row);
           const dateMatch = rowText.match(dateRe);
           if (!dateMatch) continue;
 
-          const dateStr = dateMatch[1]
-            .replace(/\//g, '.')
-            .replace(/(\d{4})\.(\d{1,2})\.(\d{1,2})/, (_, y, mo, d) =>
-              `${y}.${mo.padStart(2, '0')}.${d.padStart(2, '0')}`
-            );
+          const dateStr = normalizeDate(rowText);
+          if (!dateStr || addedDates.has(dateStr + rowText)) continue;
+          addedDates.add(dateStr + rowText);
 
-          const venue = rowText.replace(dateMatch[1], '').replace(/\s+/g, ' ').trim();
-          if (venue) venues.push({ date: dateStr, venue });
+          // 日付文字列をテキストから除去して会場名を取得
+          const venue = rowText
+            .replace(/\d{4}[./年]\d{1,2}[./月]\d{1,2}[日]?/, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+          venues.push({ date: dateStr, venue });
         }
       }
 
@@ -309,6 +340,7 @@ async function main() {
     const items = await getList(page, url, category);
     items.forEach(item => { if (!seenIds.has(item.id)) { seenIds.add(item.id); list.push(item); } });
     console.log(`  ${category}: ${items.length} 件`);
+    items.slice(0, 3).forEach(it => console.log(`    例) [${it.id}] ${it.title} / ${it.artist || '(アーティスト未取得)'}`));
   }
   console.log(`✅ 合計 ${list.length} 件の公演を発見`);
 

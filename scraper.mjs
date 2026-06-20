@@ -84,6 +84,22 @@ async function scrollToBottom(page) {
   }
 }
 
+// 「もっと見る」等のボタンを繰り返しクリックして全件展開
+async function clickLoadMore(page) {
+  let clicked = 0;
+  for (let i = 0; i < 20; i++) {
+    const btn = page.locator('button, a').filter({ hasText: /もっと見る|さらに見る|load more/i }).first();
+    const visible = await btn.isVisible().catch(() => false);
+    if (!visible) break;
+    await btn.click();
+    await sleep(1500);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await sleep(600);
+    clicked++;
+  }
+  if (clicked > 0) console.log(`  「もっと見る」を ${clicked} 回クリック`);
+}
+
 // ── 1. アーティスト一覧を取得（ID + 名前）
 async function getArtistList(page) {
   await page.goto(`${BASE}/s/p/search/artist?ima=0737&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
@@ -169,14 +185,28 @@ const LIVE_TARGETS = [
 // ── 3. 公演一覧を取得（カテゴリ別URL・アーティスト名は一覧カードの .c-text-3 から）
 async function getList(page, url, category) {
   await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+  await clickLoadMore(page);
   await scrollToBottom(page);
+  await clickLoadMore(page); // スクロール後にさらに出る場合
+  await scrollToBottom(page);
+
+  // デバッグ: ページ内の全 /s/p/live/ リンクをカテゴリ別ファイルに保存
+  const debugLinks = await page.evaluate(() =>
+    [...new Set(
+      Array.from(document.querySelectorAll('a[href*="/s/p/live/"]'))
+        .map(a => a.getAttribute('href'))
+    )]
+  );
+  await fs.writeFile(`debug_links_${category.toLowerCase()}.txt`, debugLinks.join('\n'), 'utf-8');
+  console.log(`  ${category}: ページ内の live リンク ${debugLinks.length} 件 → debug_links_${category.toLowerCase()}.txt`);
 
   return page.evaluate(cat => {
     const items = [];
     const seen  = new Set();
     document.querySelectorAll('a[href]').forEach(a => {
       const href  = a.getAttribute('href') || '';
-      const match = href.match(/\/s\/p\/live\/(\d+)/);
+      // 数字ID・スラッグIDどちらも対応
+      const match = href.match(/\/s\/p\/live\/([^?#&/]+)/);
       if (!match || seen.has(match[1])) return;
 
       // まず <a> 内から探す（<a>がカード全体をラップしている場合）
@@ -196,11 +226,16 @@ async function getList(page, url, category) {
       seen.add(match[1]);
 
       const title  = titleEl.textContent.trim();
-      // 最初の行だけ使い「出演：」「主演：」などのプレフィックスを除去
+      // .c-text-3 の各行からアーティスト名を抽出（「演出：」行は除外、「出演：」行はプレフィックス除去）
       const rawArtist = artistEl ? artistEl.textContent.trim() : '';
-      const artist = rawArtist.split('\n')[0].trim().replace(/^[^：:]+[：:]/, '').trim();
+      const artists = rawArtist
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l && !/^演出[：:]/.test(l))           // 演出：は除外
+        .map(l => l.replace(/^[^：:]+[：:]/, '').trim())   // 出演：などのプレフィックス除去
+        .filter(l => l);
 
-      items.push({ id: match[1], href: `/s/p/live/${match[1]}`, category: cat, title, artist });
+      items.push({ id: match[1], href: `/s/p/live/${match[1]}`, category: cat, title, artists });
     });
     return items;
   }, category);
@@ -216,59 +251,56 @@ async function getDetail(page, item) {
       const txt = el => el?.textContent?.trim() || '';
 
       // YYYY.MM.DD / YYYY/MM/DD / YYYY年M月D日 のいずれにもマッチ
-      const dateRe = /(\d{4})[./年](\d{1,2})[./月](\d{1,2})[日]?/;
+      const dateRe = /(\d{4})[./年](\d{1,2})[./月](\d{1,2})/;
 
-      function normalizeDate(raw) {
-        const m = raw.match(/(\d{4})[./年](\d{1,2})[./月](\d{1,2})/);
+      function normalizeDate(s) {
+        const m = s.match(dateRe);
         if (!m) return '';
         return `${m[1]}.${m[2].padStart(2, '0')}.${m[3].padStart(2, '0')}`;
       }
 
       const venues = [];
+      const seenKeys = new Set();
       const allEls = Array.from(document.querySelectorAll('*'));
 
-      // スケジュール見出し（英語・日本語両対応、heading 以外の太字テキストも考慮）
-      const scheduleHeader = allEls.find(el => {
-        if (!el.tagName.match(/^H[1-6]$/) && el.tagName !== 'P' && el.tagName !== 'DIV') return false;
-        if (el.children.length > 2) return false; // 子が多いコンテナは除外
-        return /^(schedule|スケジュール|日程|公演日程|公演スケジュール)$/i.test(txt(el));
-      });
+      // スケジュール見出し（英語・日本語両対応、h1〜h6 のみ対象）
+      const scheduleHeader = allEls.find(el =>
+        el.tagName?.match(/^H[1-6]$/) &&
+        /^(schedule|スケジュール|日程|公演日程|公演スケジュール)$/i.test(txt(el))
+      );
 
-      // 見出しがある場合はその親要素の兄弟をスキャン、なければページ全体
-      const scanTargets = scheduleHeader
-        ? Array.from(scheduleHeader.parentElement?.children || allEls)
+      // 見出しがある場合はその親要素の子要素をスキャン、なければページ全体
+      const scanEls = scheduleHeader
+        ? Array.from(scheduleHeader.parentElement?.children || [])
         : allEls;
 
-      let inSchedule = !scheduleHeader;
-      const addedDates = new Set();
+      let active = !scheduleHeader;
 
-      for (const el of scanTargets) {
-        if (el === scheduleHeader) { inSchedule = true; continue; }
-        if (!inSchedule) continue;
-        // 次の見出しが来たら終了
-        if (scheduleHeader && el !== scheduleHeader && el.tagName?.match(/^H[1-6]$/)) break;
+      for (const el of scanEls) {
+        if (el === scheduleHeader) { active = true; continue; }
+        if (!active) continue;
+        if (scheduleHeader && el.tagName?.match(/^H[1-6]$/)) break;
 
-        const rows = el.querySelectorAll('tr, li, [class*="item"], [class*="row"], [class*="schedule"]');
-        const targets2 = rows.length > 0 ? Array.from(rows) : [el];
+        const candidates = el.querySelectorAll('tr, li, [class*="item"], [class*="row"], [class*="schedule-"]');
+        const toScan = candidates.length > 0 ? Array.from(candidates) : [el];
 
-        for (const row of targets2) {
-          // 子要素を持つコンテナは個別にスキャンするのでここではスキップ
-          if (targets2.length > 1 && row.querySelector('tr, li')) continue;
+        for (const row of toScan) {
+          const t = txt(row);
+          if (!dateRe.test(t)) continue;
 
-          const rowText   = txt(row);
-          const dateMatch = rowText.match(dateRe);
-          if (!dateMatch) continue;
+          const dateStr = normalizeDate(t);
+          if (!dateStr) continue;
 
-          const dateStr = normalizeDate(rowText);
-          if (!dateStr || addedDates.has(dateStr + rowText)) continue;
-          addedDates.add(dateStr + rowText);
+          // 同じ内容は重複として除外
+          const key = dateStr + '|' + t.slice(0, 150);
+          if (seenKeys.has(key)) continue;
+          seenKeys.add(key);
 
-          // 日付文字列をテキストから除去して会場名を取得
-          const venue = rowText
-            .replace(/\d{4}[./年]\d{1,2}[./月]\d{1,2}[日]?/, '')
+          const venue = t
+            .replace(/\d{4}[./年]\d{1,2}[./月]\d{1,2}[日]?/g, '')
             .replace(/\s+/g, ' ')
             .trim();
-          venues.push({ date: dateStr, venue });
+          if (venue) venues.push({ date: dateStr, venue });
         }
       }
 
@@ -283,21 +315,27 @@ async function getDetail(page, item) {
       : dates.length === 1           ? dates[0]
       : `${dates[0]}-${dates[dates.length - 1]}`;
 
-    // 一覧ページから取得済みのタイトル・アーティスト名を使用
-    // アーティストが取得できなかった場合のみタイトルマッチングで補完
-    const artistName = item.artist || guessArtistFromTitle(item.title);
+    // 一覧ページから取得済みのアーティスト名を使用、空の場合はタイトルマッチングで補完
+    let finalArtists = (item.artists && item.artists.length > 0)
+      ? item.artists
+      : [];
+    if (finalArtists.length === 0) {
+      const guessed = guessArtistFromTitle(item.title);
+      if (guessed) finalArtists = [guessed];
+    }
 
     return {
       title:    item.title,
       date,
       category: item.category,
       venues,
-      artists:  artistName ? [artistName] : [],
+      artists:  finalArtists,
     };
 
   } catch (e) {
     console.error(`  ✗ ${item.href} 取得失敗: ${e.message}`);
-    return { title: item.title, date: '', category: item.category, venues: [], artists: item.artist ? [item.artist] : [] };
+    const fallback = (item.artists && item.artists.length > 0) ? item.artists : [];
+    return { title: item.title, date: '', category: item.category, venues: [], artists: fallback };
   }
 }
 
@@ -340,7 +378,7 @@ async function main() {
     const items = await getList(page, url, category);
     items.forEach(item => { if (!seenIds.has(item.id)) { seenIds.add(item.id); list.push(item); } });
     console.log(`  ${category}: ${items.length} 件`);
-    items.slice(0, 3).forEach(it => console.log(`    例) [${it.id}] ${it.title} / ${it.artist || '(アーティスト未取得)'}`));
+    items.slice(0, 3).forEach(it => console.log(`    例) [${it.id}] ${it.title} / ${(it.artists||[]).join(', ') || '(アーティスト未取得)'}`));
   }
   console.log(`✅ 合計 ${list.length} 件の公演を発見`);
 

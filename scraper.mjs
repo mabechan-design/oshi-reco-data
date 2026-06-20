@@ -23,13 +23,26 @@ async function getArtistList(page) {
   await page.goto(`${BASE}/s/p/search/artist?ima=0737&lang=ja`, { waitUntil: 'networkidle', timeout: 30000 });
   await scrollToBottom(page);
 
+  // デバッグ: 全リストアイテムの href と名前を保存
+  const debugInfo = await page.evaluate(() => {
+    const lines = [];
+    document.querySelectorAll('.p-in_artist__list-item').forEach((li, i) => {
+      const a    = li.querySelector('a');
+      const href = a ? a.getAttribute('href') : '(no link)';
+      const name = li.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
+      lines.push(`[${i}] href="${href}" name="${name}"`);
+    });
+    return `total: ${lines.length}\n` + lines.join('\n');
+  });
+  await fs.writeFile('debug_artistlist.txt', debugInfo, 'utf-8');
+  console.log('  DEBUG: debug_artistlist.txt を保存');
+
   return page.evaluate(() => {
     const artists = [];
     const seen    = new Set();
     document.querySelectorAll('.p-in_artist__list-item').forEach(li => {
       const a    = li.querySelector('a[href*="/s/p/artist/"]');
       const href = a ? a.getAttribute('href') : '';
-      // 数字IDだけでなく文字列IDも対応（例: /s/p/artist/domoto）
       const m    = href && href.match(/\/s\/p\/artist\/([^/?#]+)/);
       if (!m) return;
       const id = m[1];

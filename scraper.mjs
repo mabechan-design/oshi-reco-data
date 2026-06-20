@@ -182,161 +182,125 @@ const LIVE_TARGETS = [
   { url: `${BASE}/s/p/live?ima=4135&ct=event`,   category: 'EVENT'   },
 ];
 
-// ── 3. 公演一覧を取得（カテゴリ別URL・アーティスト名は一覧カードの .c-text-3 から）
+// ── 3. 公演一覧を取得（カードから title/date/artists を直接取得。外部リンクの公演も拾う）
 async function getList(page, url, category) {
   await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
   await clickLoadMore(page);
   await scrollToBottom(page);
-  await clickLoadMore(page); // スクロール後にさらに出る場合
-  await scrollToBottom(page);
-
-  // デバッグ: ページ内の全 /s/p/live/ リンクをカテゴリ別ファイルに保存
-  const debugLinks = await page.evaluate(() =>
-    [...new Set(
-      Array.from(document.querySelectorAll('a[href*="/s/p/live/"]'))
-        .map(a => a.getAttribute('href'))
-    )]
-  );
-  await fs.writeFile(`debug_links_${category.toLowerCase()}.txt`, debugLinks.join('\n'), 'utf-8');
-  console.log(`  ${category}: ページ内の live リンク ${debugLinks.length} 件 → debug_links_${category.toLowerCase()}.txt`);
 
   return page.evaluate(cat => {
+    // 全角・半角の括弧書き（出演日程など）を末尾から除去
+    const stripParen = s => s.replace(/\s*[（(][^）)]*[）)]?\s*$/g, '').trim();
+
     const items = [];
-    const seen  = new Set();
-    document.querySelectorAll('a[href]').forEach(a => {
-      const href  = a.getAttribute('href') || '';
-      // 数字ID・スラッグIDどちらも対応
-      const match = href.match(/\/s\/p\/live\/([^?#&/]+)/);
-      if (!match || seen.has(match[1])) return;
+    document.querySelectorAll('li.p-in_cs__list-item').forEach(li => {
+      const a = li.querySelector('a.c-cs_card, a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href') || '';
 
-      // まず <a> 内から探す（<a>がカード全体をラップしている場合）
-      let titleEl  = a.querySelector('.c-ttl-2');
-      let artistEl = a.querySelector('.c-text-3');
+      const titleEl = li.querySelector('.c-ttl-2');
+      const title   = titleEl ? titleEl.textContent.trim() : '';
+      if (!title) return; // テンプレート行などを除外
 
-      // 見つからない場合は親要素をさかのぼる（STAGEなど <a> がカード内リンクの場合）
-      if (!titleEl) {
-        let el = a.parentElement;
-        for (let i = 0; i < 6 && el; i++, el = el.parentElement) {
-          const t = el.querySelector('.c-ttl-2');
-          if (t) { titleEl = t; artistEl = el.querySelector('.c-text-3'); break; }
-        }
-      }
+      // 日付（カードに整形済みで入っている）
+      // 例 "2026.08.14 - 2026.08.16" / "2026.11"（年月のみ）/ "2026.10 - 2026.11"
+      const dateEl   = li.querySelector('.c-date') || li.querySelector('.c-cs_card__date');
+      const dateText = dateEl ? dateEl.textContent : '';
+      const dparts   = (dateText.match(/\d{4}\.\d{1,2}(?:\.\d{1,2})?/g) || [])
+        .map(d => {
+          const p = d.split('.');
+          return p.length === 3
+            ? `${p[0]}.${p[1].padStart(2, '0')}.${p[2].padStart(2, '0')}` // 年月日
+            : `${p[0]}.${p[1].padStart(2, '0')}`;                          // 年月のみ
+        });
+      const cardDate = dparts.length === 0 ? ''
+        : dparts.length === 1 ? dparts[0]
+        : `${dparts[0]}-${dparts[dparts.length - 1]}`;
 
-      if (!titleEl) return;
-      seen.add(match[1]);
+      // アーティスト（.c-text-3。<br>区切り＋全角スペース区切り、演出など制作陣は除外）
+      const artistEl  = li.querySelector('.c-text-3');
+      const rawArtist = artistEl ? (artistEl.innerText || artistEl.textContent || '') : '';
+      const artists = [];
+      rawArtist.split('\n').map(l => l.trim()).filter(Boolean).forEach(line => {
+        // 制作陣（演出・脚本など）の行は除外
+        if (/^(演出|脚本|作・演出|作|振付|音楽|構成|監督|原作|企画)[：:・]/.test(line)) return;
+        // 行頭の役割プレフィックス（出演：/主演：など）だけを除去（名前内のコロンは保持）
+        const body = line.replace(/^(出演|主演|友情出演|特別出演|ゲスト|声の出演|MC|司会)[：:]\s*/, '');
+        // 全角スペースで複数名に分割し、各名から末尾の括弧書きを除去
+        body.split(/[　]+/).map(n => stripParen(n.trim())).filter(Boolean)
+          .forEach(n => { if (!artists.includes(n)) artists.push(n); });
+      });
 
-      const title  = titleEl.textContent.trim();
-      // .c-text-3 の各行からアーティスト名を抽出（「演出：」行は除外、「出演：」行はプレフィックス除去）
-      const rawArtist = artistEl ? artistEl.textContent.trim() : '';
-      const artists = rawArtist
-        .split('\n')
-        .map(l => l.trim())
-        .filter(l => l && !/^演出[：:]/.test(l))           // 演出：は除外
-        .map(l => l.replace(/^[^：:]+[：:]/, '').trim())   // 出演：などのプレフィックス除去
-        .filter(l => l);
+      // 内部公演（/s/p/live/N）か外部リンクか
+      const m = href.match(/\/s\/p\/live\/(\d+)/);
+      const id = m ? m[1] : `${href}|${title}`;    // 外部は URL+タイトルをキーに
+      const detailHref = m ? `/s/p/live/${m[1]}` : null;
 
-      items.push({ id: match[1], href: `/s/p/live/${match[1]}`, category: cat, title, artists });
+      items.push({ id, href: detailHref, external: !m, category: cat, title, cardDate, artists });
     });
+
     return items;
   }, category);
 }
 
-// ── 4. 公演詳細ページから会場・日程・タイトル・アーティストを取得
+// ── 4. 詳細ページの埋め込み JS 変数 live_info_item から会場・日程を取得（内部公演のみ）
 async function getDetail(page, item) {
+  // 外部リンクの公演は詳細ページが無いため、カード情報のみ使用
+  if (item.external || !item.href) {
+    return finalize(item, item.cardDate, []);
+  }
+
   try {
     await page.goto(`${BASE}${item.href}`, { waitUntil: 'networkidle', timeout: 30000 });
-    await sleep(1200);
+    await sleep(800);
 
     const raw = await page.evaluate(() => {
-      const txt = el => el?.textContent?.trim() || '';
-
-      // YYYY.MM.DD / YYYY/MM/DD / YYYY年M月D日 のいずれにもマッチ
-      const dateRe = /(\d{4})[./年](\d{1,2})[./月](\d{1,2})/;
-
-      function normalizeDate(s) {
-        const m = s.match(dateRe);
-        if (!m) return '';
-        return `${m[1]}.${m[2].padStart(2, '0')}.${m[3].padStart(2, '0')}`;
-      }
+      // ページ内 <script> の const live_info_item をそのまま読む
+      const data = (typeof live_info_item !== 'undefined') ? live_info_item : null;
+      if (!Array.isArray(data)) return { venues: [], min: '', max: '' };
 
       const venues = [];
-      const seenKeys = new Set();
-      const allEls = Array.from(document.querySelectorAll('*'));
-
-      // スケジュール見出し（英語・日本語両対応、h1〜h6 のみ対象）
-      const scheduleHeader = allEls.find(el =>
-        el.tagName?.match(/^H[1-6]$/) &&
-        /^(schedule|スケジュール|日程|公演日程|公演スケジュール)$/i.test(txt(el))
-      );
-
-      // 見出しがある場合はその親要素の子要素をスキャン、なければページ全体
-      const scanEls = scheduleHeader
-        ? Array.from(scheduleHeader.parentElement?.children || [])
-        : allEls;
-
-      let active = !scheduleHeader;
-
-      for (const el of scanEls) {
-        if (el === scheduleHeader) { active = true; continue; }
-        if (!active) continue;
-        if (scheduleHeader && el.tagName?.match(/^H[1-6]$/)) break;
-
-        const candidates = el.querySelectorAll('tr, li, [class*="item"], [class*="row"], [class*="schedule-"]');
-        const toScan = candidates.length > 0 ? Array.from(candidates) : [el];
-
-        for (const row of toScan) {
-          const t = txt(row);
-          if (!dateRe.test(t)) continue;
-
-          const dateStr = normalizeDate(t);
-          if (!dateStr) continue;
-
-          // 同じ内容は重複として除外
-          const key = dateStr + '|' + t.slice(0, 150);
-          if (seenKeys.has(key)) continue;
-          seenKeys.add(key);
-
-          const venue = t
-            .replace(/\d{4}[./年]\d{1,2}[./月]\d{1,2}[日]?/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-          if (venue) venues.push({ date: dateStr, venue });
-        }
-      }
-
-      return { venues };
+      let min = '', max = '';
+      data.forEach(o => {
+        if (!o || typeof o !== 'object' || !o.str_itemDate) return;
+        const date = String(o.str_itemDate).replace(/-/g, '.');
+        const place = [o.str_itemPlacePref, o.str_itemPlace].map(s => (s || '').trim()).filter(Boolean).join(' ');
+        const time  = (o.str_itemTime || '').trim();
+        const venue = [place, time].filter(Boolean).join(' ').trim();
+        venues.push({ date, venue });
+        if (o.str_itemDateMin) min = String(o.str_itemDateMin).replace(/-/g, '.');
+        if (o.str_itemDateMax) max = String(o.str_itemDateMax).replace(/-/g, '.');
+      });
+      return { venues, min, max };
     });
 
-    const { venues } = raw;
-
-    // venues の最小・最大日付からツアー期間を計算
-    const dates = venues.map(v => v.date).filter(Boolean).sort();
-    const date  = dates.length === 0 ? ''
-      : dates.length === 1           ? dates[0]
-      : `${dates[0]}-${dates[dates.length - 1]}`;
-
-    // 一覧ページから取得済みのアーティスト名を使用、空の場合はタイトルマッチングで補完
-    let finalArtists = (item.artists && item.artists.length > 0)
-      ? item.artists
-      : [];
-    if (finalArtists.length === 0) {
-      const guessed = guessArtistFromTitle(item.title);
-      if (guessed) finalArtists = [guessed];
+    // 日付は live_info_item の min/max を優先、なければ venues、最後にカード日付
+    let date = '';
+    if (raw.min && raw.max) {
+      date = raw.min === raw.max ? raw.min : `${raw.min}-${raw.max}`;
+    } else if (raw.venues.length > 0) {
+      const ds = raw.venues.map(v => v.date).filter(Boolean).sort();
+      date = ds.length === 1 ? ds[0] : `${ds[0]}-${ds[ds.length - 1]}`;
+    } else {
+      date = item.cardDate;
     }
 
-    return {
-      title:    item.title,
-      date,
-      category: item.category,
-      venues,
-      artists:  finalArtists,
-    };
+    return finalize(item, date, raw.venues);
 
   } catch (e) {
     console.error(`  ✗ ${item.href} 取得失敗: ${e.message}`);
-    const fallback = (item.artists && item.artists.length > 0) ? item.artists : [];
-    return { title: item.title, date: '', category: item.category, venues: [], artists: fallback };
+    return finalize(item, item.cardDate, []);
   }
+}
+
+// 公演オブジェクトを組み立て（アーティストが空ならタイトルから推定）
+function finalize(item, date, venues) {
+  let artists = (item.artists && item.artists.length > 0) ? item.artists : [];
+  if (artists.length === 0) {
+    const guessed = guessArtistFromTitle(item.title);
+    if (guessed) artists = [guessed];
+  }
+  return { title: item.title, date, category: item.category, venues, artists };
 }
 
 // ── メイン
@@ -385,10 +349,10 @@ async function main() {
   const lives = [];
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
-    console.log(`[${i + 1}/${list.length}] ${item.href} を取得中...`);
+    console.log(`[${i + 1}/${list.length}] ${item.external ? '(外部) ' + item.title : item.href} を取得中...`);
     const detail = await getDetail(page, item);
     lives.push(detail);
-    await sleep(DELAY);
+    if (!item.external) await sleep(DELAY); // 詳細ページを開いた時だけ待つ
   }
 
   await browser.close();

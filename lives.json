@@ -883,6 +883,52 @@
     ]
   },
   {
+    "title": "A.B.C-Z Concert Tour 2026 The Way of L.O.V-E",
+    "date": "2026.10.14-2026.11.24",
+    "category": "CONCERT",
+    "venues": [
+      {
+        "date": "2026.10.14",
+        "venue": "大阪府 オリックス劇場 18:00"
+      },
+      {
+        "date": "2026.10.15",
+        "venue": "大阪府 オリックス劇場 13:00"
+      },
+      {
+        "date": "2026.10.15",
+        "venue": "大阪府 オリックス劇場 18:00"
+      },
+      {
+        "date": "2026.10.19",
+        "venue": "愛知県 刈谷市総合文化センター 大ホール 18:00"
+      },
+      {
+        "date": "2026.10.20",
+        "venue": "愛知県 刈谷市総合文化センター 大ホール 13:00"
+      },
+      {
+        "date": "2026.10.20",
+        "venue": "愛知県 刈谷市総合文化センター 大ホール 18:00"
+      },
+      {
+        "date": "2026.10.31",
+        "venue": "東京都 東京ガーデンシアター 18:00"
+      },
+      {
+        "date": "2026.11.01",
+        "venue": "東京都 東京ガーデンシアター 17:00"
+      },
+      {
+        "date": "2026.11.24",
+        "venue": "福岡県 福岡サンパレス 18:00"
+      }
+    ],
+    "artists": [
+      "A.B.C-Z"
+    ]
+  },
+  {
     "title": "KAMIGATA EXPO PARK FES 2026",
     "date": "2026.10.31-2026.11.01",
     "category": "CONCERT",
@@ -905,189 +951,45 @@
     ]
   },
   {
-    "title": "俺節",
-    "date": "2026.06.10-2026.08.02",
-    "category": "STAGE",
+    "title": "ATSUHIRO Live Third! ～Yellow Kiss 2026 by BBL～",
+    "date": "2026.11.14-2026.11.28",
+    "category": "CONCERT",
     "venues": [
       {
-        "date": "2026.06.10",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
+        "date": "2026.11.14",
+        "venue": "神奈川県 Billboard Live YOKOHAMA 15:00"
       },
       {
-        "date": "2026.06.12",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
+        "date": "2026.11.14",
+        "venue": "神奈川県 Billboard Live YOKOHAMA 18:00"
       },
       {
-        "date": "2026.06.13",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
+        "date": "2026.11.15",
+        "venue": "神奈川県 Billboard Live YOKOHAMA 15:00"
       },
       {
-        "date": "2026.06.13",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
+        "date": "2026.11.15",
+        "venue": "神奈川県 Billboard Live YOKOHAMA 18:00"
       },
       {
-        "date": "2026.06.14",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
+        "date": "2026.11.28",
+        "venue": "神奈川県 Billboard Live YOKOHAMA 15:00"
       },
       {
-        "date": "2026.06.15",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
+        "date": "2026.11.28",
+        "venue": "神奈川県 Billboard Live YOKOHAMA 18:00"
       },
       {
-        "date": "2026.06.16",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
+        "date": "2026.11.21",
+        "venue": "大阪府 Billboard Live OSAKA 15:00"
       },
       {
-        "date": "2026.06.17",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.06.17",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
-      },
-      {
-        "date": "2026.06.19",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
-      },
-      {
-        "date": "2026.06.20",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.06.20",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
-      },
-      {
-        "date": "2026.06.21",
-        "venue": "東京都 東京建物 Brillia HALL 12:00★"
-      },
-      {
-        "date": "2026.06.23",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.06.24",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.06.24",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
-      },
-      {
-        "date": "2026.06.26",
-        "venue": "東京都 東京建物 Brillia HALL 17:30★"
-      },
-      {
-        "date": "2026.06.27",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.06.27",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
-      },
-      {
-        "date": "2026.06.28",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.06.29",
-        "venue": "東京都 東京建物 Brillia HALL 17:30"
-      },
-      {
-        "date": "2026.06.30",
-        "venue": "東京都 東京建物 Brillia HALL 12:00"
-      },
-      {
-        "date": "2026.07.08",
-        "venue": "福岡県 キャナルシティ劇場 17:30"
-      },
-      {
-        "date": "2026.07.09",
-        "venue": "福岡県 キャナルシティ劇場 12:00"
-      },
-      {
-        "date": "2026.07.09",
-        "venue": "福岡県 キャナルシティ劇場 17:30"
-      },
-      {
-        "date": "2026.07.10",
-        "venue": "福岡県 キャナルシティ劇場 16:30"
-      },
-      {
-        "date": "2026.07.12",
-        "venue": "福岡県 キャナルシティ劇場 14:00"
-      },
-      {
-        "date": "2026.07.19",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:00"
-      },
-      {
-        "date": "2026.07.21",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.22",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 12:00"
-      },
-      {
-        "date": "2026.07.22",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.23",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.24",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.25",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 12:00"
-      },
-      {
-        "date": "2026.07.25",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.26",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 12:00"
-      },
-      {
-        "date": "2026.07.28",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.29",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 12:00"
-      },
-      {
-        "date": "2026.07.29",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.30",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.07.31",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.08.01",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 12:00"
-      },
-      {
-        "date": "2026.08.01",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 17:30"
-      },
-      {
-        "date": "2026.08.02",
-        "venue": "大阪府 ＳｋｙシアターＭＢＳ 12:00"
+        "date": "2026.11.21",
+        "venue": "大阪府 Billboard Live OSAKA 18:00"
       }
     ],
     "artists": [
-      "松田元太"
+      "佐藤アツヒロ"
     ]
   },
   {
@@ -2076,28 +1978,6 @@
     ]
   },
   {
-    "title": "朗読劇ROOM2026",
-    "date": "2026.07.26-2026.07.30",
-    "category": "STAGE",
-    "venues": [
-      {
-        "date": "2026.07.26",
-        "venue": "東京都 シアターサンモール 14:00"
-      },
-      {
-        "date": "2026.07.30",
-        "venue": "東京都 シアターサンモール 14:00"
-      },
-      {
-        "date": "2026.07.30",
-        "venue": "東京都 シアターサンモール 19:00"
-      }
-    ],
-    "artists": [
-      "松本幸大"
-    ]
-  },
-  {
     "title": "クジラが群れた恋",
     "date": "2026.08.02-2026.08.10",
     "category": "STAGE",
@@ -3023,6 +2903,76 @@
     ]
   },
   {
+    "title": "スクラップ アンド コーラス　-君が灯したメロディー-",
+    "date": "2026.09.18-2026.10.25",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.09.18",
+        "venue": "東京都 THEATER MILANO-Za 18:30"
+      },
+      {
+        "date": "2026.09.19",
+        "venue": "東京都 THEATER MILANO-Za 13:00"
+      },
+      {
+        "date": "2026.09.19",
+        "venue": "東京都 THEATER MILANO-Za 17:30"
+      },
+      {
+        "date": "2026.09.20",
+        "venue": "東京都 THEATER MILANO-Za 13:00"
+      },
+      {
+        "date": "2026.09.21",
+        "venue": "東京都 THEATER MILANO-Za 13:00"
+      },
+      {
+        "date": "2026.09.21",
+        "venue": "東京都 THEATER MILANO-Za 17:30"
+      },
+      {
+        "date": "2026.09.22",
+        "venue": "東京都 THEATER MILANO-Za 17:30"
+      },
+      {
+        "date": "2026.09.25",
+        "venue": "東京都 THEATER MILANO-Za 18:30"
+      },
+      {
+        "date": "2026.09.26",
+        "venue": "東京都 THEATER MILANO-Za 13:00"
+      },
+      {
+        "date": "2026.09.26",
+        "venue": "東京都 THEATER MILANO-Za 17:30"
+      },
+      {
+        "date": "2026.09.27",
+        "venue": "東京都 THEATER MILANO-Za 13:00"
+      },
+      {
+        "date": "2026.10.23",
+        "venue": "大阪府 東京建物 Brillia HALL 箕面 大ホール 18:30"
+      },
+      {
+        "date": "2026.10.24",
+        "venue": "大阪府 東京建物 Brillia HALL 箕面 大ホール 13:00"
+      },
+      {
+        "date": "2026.10.24",
+        "venue": "大阪府 東京建物 Brillia HALL 箕面 大ホール 17:30"
+      },
+      {
+        "date": "2026.10.25",
+        "venue": "大阪府 東京建物 Brillia HALL 箕面 大ホール 13:00"
+      }
+    ],
+    "artists": [
+      "八乙女光"
+    ]
+  },
+  {
     "title": "water",
     "date": "2026.09.27-2026.11.10",
     "category": "STAGE",
@@ -3570,6 +3520,52 @@
     ]
   },
   {
+    "title": "スナック・モブキャラ",
+    "date": "2026.10.07-2026.10.13",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.10.07",
+        "venue": "東京都 銀座博品館劇場 19:00"
+      },
+      {
+        "date": "2026.10.08",
+        "venue": "東京都 銀座博品館劇場 19:00"
+      },
+      {
+        "date": "2026.10.09",
+        "venue": "東京都 銀座博品館劇場 14:00"
+      },
+      {
+        "date": "2026.10.09",
+        "venue": "東京都 銀座博品館劇場 19:00"
+      },
+      {
+        "date": "2026.10.10",
+        "venue": "東京都 銀座博品館劇場 13:00"
+      },
+      {
+        "date": "2026.10.10",
+        "venue": "東京都 銀座博品館劇場 17:00"
+      },
+      {
+        "date": "2026.10.12",
+        "venue": "東京都 銀座博品館劇場 13:00"
+      },
+      {
+        "date": "2026.10.12",
+        "venue": "東京都 銀座博品館劇場 17:00"
+      },
+      {
+        "date": "2026.10.13",
+        "venue": "東京都 銀座博品館劇場 14:00"
+      }
+    ],
+    "artists": [
+      "林翔太"
+    ]
+  },
+  {
     "title": "兄おとうと",
     "date": "2026.10.11-2026.11.03",
     "category": "STAGE",
@@ -3920,6 +3916,36 @@
     ]
   },
   {
+    "title": "THE RE:BORN CHASING DISCOTHEQUE LIVE",
+    "date": "2026.10.28-2026.10.30",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.10.28",
+        "venue": "東京都 東京グローブ座 18:00"
+      },
+      {
+        "date": "2026.10.29",
+        "venue": "東京都 東京グローブ座 14:00"
+      },
+      {
+        "date": "2026.10.29",
+        "venue": "東京都 東京グローブ座 18:00"
+      },
+      {
+        "date": "2026.10.30",
+        "venue": "東京都 東京グローブ座 14:00"
+      },
+      {
+        "date": "2026.10.30",
+        "venue": "東京都 東京グローブ座 18:00"
+      }
+    ],
+    "artists": [
+      "草間リチャード敬太"
+    ]
+  },
+  {
     "title": "室三兄弟舞台『ムロ家のアカンタレ』",
     "date": "2026.10.29-2026.11.15",
     "category": "STAGE",
@@ -3987,6 +4013,122 @@
     ],
     "artists": [
       "室龍太"
+    ]
+  },
+  {
+    "title": "百鬼夜鏡",
+    "date": "2026.11.03-2026.11.26",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.11.03",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.05",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.05",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.06",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.07",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.07",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.08",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.09",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.10",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.12",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.12",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.14",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.15",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.15",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.16",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.17",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.17",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.19",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.19",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.20",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.21",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.21",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      },
+      {
+        "date": "2026.11.22",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.23",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.26",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:30"
+      },
+      {
+        "date": "2026.11.26",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+      }
+    ],
+    "artists": [
+      "薮宏太",
+      "戸塚祥太",
+      "松崎祐介"
     ]
   },
   {
@@ -4133,17 +4275,6 @@
     ]
   },
   {
-    "title": "百鬼夜鏡",
-    "date": "2026.11",
-    "category": "STAGE",
-    "venues": [],
-    "artists": [
-      "薮宏太",
-      "戸塚祥太",
-      "松崎祐介"
-    ]
-  },
-  {
     "title": "ミュージカル『三銃士：Reborn』",
     "date": "2027.01-2027.02",
     "category": "STAGE",
@@ -4177,15 +4308,6 @@
     "venues": [],
     "artists": [
       "SixTONES"
-    ]
-  },
-  {
-    "title": "テレビ朝日・六本木ヒルズ SUMMER FES 2026「スポンジ・シノ 真夏の超吸収フェス」",
-    "date": "2026.07.27-2026.07.28",
-    "category": "EVENT",
-    "venues": [],
-    "artists": [
-      "篠塚大輝"
     ]
   },
   {
@@ -4323,6 +4445,15 @@
     ],
     "artists": [
       "井ノ原快彦"
+    ]
+  },
+  {
+    "title": "Xnterstellar Music Festival 2026",
+    "date": "2026.10.04",
+    "category": "EVENT",
+    "venues": [],
+    "artists": [
+      "Aぇ! group"
     ]
   },
   {

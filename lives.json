@@ -871,85 +871,6 @@
     ]
   },
   {
-    "title": "New HISTORY COMING ARENA LIVE -The Imperial Theatre Symphony-",
-    "date": "2026.08.07-2026.09.06",
-    "category": "STAGE",
-    "venues": [],
-    "artists": [
-      "堂本光一"
-    ]
-  },
-  {
-    "title": "フタマツヅキ",
-    "date": "2026.08.21-2026.09.06",
-    "category": "STAGE",
-    "venues": [
-      {
-        "date": "2026.08.21",
-        "venue": "東京都 IMM THEATER 14:00"
-      },
-      {
-        "date": "2026.08.22",
-        "venue": "東京都 IMM THEATER 13:00"
-      },
-      {
-        "date": "2026.08.22",
-        "venue": "東京都 IMM THEATER 17:30"
-      },
-      {
-        "date": "2026.08.23",
-        "venue": "東京都 IMM THEATER 13:00"
-      },
-      {
-        "date": "2026.08.25",
-        "venue": "東京都 IMM THEATER 14:00"
-      },
-      {
-        "date": "2026.08.26",
-        "venue": "東京都 IMM THEATER 14:00"
-      },
-      {
-        "date": "2026.08.26",
-        "venue": "東京都 IMM THEATER 18:30"
-      },
-      {
-        "date": "2026.08.27",
-        "venue": "東京都 IMM THEATER 18:30"
-      },
-      {
-        "date": "2026.08.28",
-        "venue": "東京都 IMM THEATER 14:00"
-      },
-      {
-        "date": "2026.08.29",
-        "venue": "東京都 IMM THEATER 13:00"
-      },
-      {
-        "date": "2026.08.29",
-        "venue": "東京都 IMM THEATER 17:30"
-      },
-      {
-        "date": "2026.08.30",
-        "venue": "東京都 IMM THEATER 13:00"
-      },
-      {
-        "date": "2026.09.05",
-        "venue": "京都府 京都劇場 13:00"
-      },
-      {
-        "date": "2026.09.05",
-        "venue": "京都府 京都劇場 17:30"
-      },
-      {
-        "date": "2026.09.06",
-        "venue": "京都府 京都劇場 13:00"
-      }
-    ],
-    "artists": [
-      "辰巳雄大"
-    ]
-  },
-  {
     "title": "ミュージカル「本好きの下剋上〜司書になるためには手段を選んでいられません〜2026」",
     "date": "2026.08.22-2026.09.20",
     "category": "STAGE",
@@ -3390,12 +3311,12 @@
     ]
   },
   {
-    "title": "Kis-My-Ft2：The Couture",
-    "date": "2026.04.24-2026.09.06",
-    "category": "EVENT",
+    "title": "New HISTORY COMING ARENA LIVE -The Imperial Theatre Symphony-",
+    "date": "",
+    "category": "STAGE",
     "venues": [],
     "artists": [
-      "Kis-My-Ft2"
+      "堂本光一"
     ]
   },
   {
@@ -3598,6 +3519,72 @@
     "venues": [],
     "artists": [
       "佐野晶哉"
+    ]
+  },
+  {
+    "title": "CHOI集会 〜ごちそうさま〜 全国!? Zeppツアー in クリスマス 2026",
+    "date": "2026.12.08-2026.12.25",
+    "category": "EVENT",
+    "venues": [
+      {
+        "date": "2026.12.08",
+        "venue": "神奈川県 KT Zepp Yokohama 15:30"
+      },
+      {
+        "date": "2026.12.08",
+        "venue": "神奈川県 KT Zepp Yokohama 19:00"
+      },
+      {
+        "date": "2026.12.09",
+        "venue": "神奈川県 KT Zepp Yokohama 14:30"
+      },
+      {
+        "date": "2026.12.09",
+        "venue": "神奈川県 KT Zepp Yokohama 18:00"
+      },
+      {
+        "date": "2026.12.15",
+        "venue": "大阪府 Zepp Osaka Bayside 15:30"
+      },
+      {
+        "date": "2026.12.15",
+        "venue": "大阪府 Zepp Osaka Bayside 19:00"
+      },
+      {
+        "date": "2026.12.16",
+        "venue": "大阪府 Zepp Osaka Bayside 13:30"
+      },
+      {
+        "date": "2026.12.16",
+        "venue": "大阪府 Zepp Osaka Bayside 17:00"
+      },
+      {
+        "date": "2026.12.21",
+        "venue": "福岡県 Zepp Fukuoka 15:00"
+      },
+      {
+        "date": "2026.12.21",
+        "venue": "福岡県 Zepp Fukuoka 18:30"
+      },
+      {
+        "date": "2026.12.23",
+        "venue": "愛知県 Zepp Nagoya 15:00"
+      },
+      {
+        "date": "2026.12.23",
+        "venue": "愛知県 Zepp Nagoya 18:30"
+      },
+      {
+        "date": "2026.12.25",
+        "venue": "東京都 有楽町よみうりホール 14:30"
+      },
+      {
+        "date": "2026.12.25",
+        "venue": "東京都 有楽町よみうりホール 18:00"
+      }
+    ],
+    "artists": [
+      "小山慶一郎"
     ]
   }
 ]

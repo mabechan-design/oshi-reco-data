@@ -960,31 +960,31 @@
       },
       {
         "date": "2026.09.06",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00<em>※中止</em>"
       },
       {
         "date": "2026.09.07",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00<em>※中止</em>"
       },
       {
         "date": "2026.09.08",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00<em>※中止</em>"
       },
       {
         "date": "2026.09.08",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00<em>※中止</em>"
       },
       {
         "date": "2026.09.10",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00<em>※中止</em>"
       },
       {
         "date": "2026.09.10",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00<em>※中止</em>"
       },
       {
         "date": "2026.09.11",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) <em>15:00※変更</em>"
       },
       {
         "date": "2026.09.12",
@@ -1085,6 +1085,10 @@
       {
         "date": "2026.10.08",
         "venue": "大阪府 オリックス劇場 13:00"
+      },
+      {
+        "date": "2026.09.22",
+        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) <em>17:00※追加</em>"
       }
     ],
     "artists": [
@@ -1876,6 +1880,64 @@
     ],
     "artists": [
       "佐久間大介"
+    ]
+  },
+  {
+    "title": "朗読劇「星新一が描いた未来」",
+    "date": "2026.09.30-2026.10.07",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.09.30",
+        "venue": "東京都 IMM THEATER 15:00"
+      },
+      {
+        "date": "2026.09.30",
+        "venue": "東京都 IMM THEATER 19:00"
+      },
+      {
+        "date": "2026.10.01",
+        "venue": "東京都 IMM THEATER 19:00"
+      },
+      {
+        "date": "2026.10.02",
+        "venue": "東京都 IMM THEATER 19:00"
+      },
+      {
+        "date": "2026.10.03",
+        "venue": "東京都 IMM THEATER 15:00"
+      },
+      {
+        "date": "2026.10.03",
+        "venue": "東京都 IMM THEATER 19:00"
+      },
+      {
+        "date": "2026.10.04",
+        "venue": "東京都 IMM THEATER 15:00"
+      },
+      {
+        "date": "2026.10.05",
+        "venue": "東京都 IMM THEATER 15:00"
+      },
+      {
+        "date": "2026.10.05",
+        "venue": "東京都 IMM THEATER 19:00"
+      },
+      {
+        "date": "2026.10.06",
+        "venue": "東京都 IMM THEATER 15:00"
+      },
+      {
+        "date": "2026.10.06",
+        "venue": "東京都 IMM THEATER 19:00"
+      },
+      {
+        "date": "2026.10.07",
+        "venue": "東京都 IMM THEATER 15:00"
+      }
+    ],
+    "artists": [
+      "福田悠太"
     ]
   },
   {
@@ -3385,6 +3447,15 @@
     "venues": [],
     "artists": [
       "Aぇ! group"
+    ]
+  },
+  {
+    "title": "STAR フェス",
+    "date": "2026.10.10",
+    "category": "EVENT",
+    "venues": [],
+    "artists": [
+      "ふぉ～ゆ～"
     ]
   },
   {

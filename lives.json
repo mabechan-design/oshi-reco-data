@@ -442,32 +442,6 @@
     ]
   },
   {
-    "title": "Ryosuke Yamada Asia Tour 2026  Red.Y",
-    "date": "2026.09.05-2026.09.26",
-    "category": "CONCERT",
-    "venues": [
-      {
-        "date": "2026.09.05",
-        "venue": "台北 TAIPEI MUSIC CENTER"
-      },
-      {
-        "date": "2026.09.06",
-        "venue": "台北 TAIPEI MUSIC CENTER"
-      },
-      {
-        "date": "2026.09.13",
-        "venue": "ソウル Jangchung Arena"
-      },
-      {
-        "date": "2026.09.26",
-        "venue": "バンコク Thunder Dome"
-      }
-    ],
-    "artists": [
-      "Ryosuke Yamada"
-    ]
-  },
-  {
     "title": "Tomohiro Kamiyama 1st LIVE TOUR 2026 INPUT⇄OUTPUT",
     "date": "2026.09.18-2026.10.15",
     "category": "CONCERT",
@@ -767,6 +741,13 @@
     "artists": [
       "Kis-My-Ft2"
     ]
+  },
+  {
+    "title": "COUNTDOWN CONCERT 2026-2027 STARTO to WORLD",
+    "date": "2026.12.31-2027.01.01",
+    "category": "CONCERT",
+    "venues": [],
+    "artists": []
   },
   {
     "title": "EX THEATER ARIAKE OPENING LINEUP ミュージカル「タイムトラベラーズ・ワイフ」",
@@ -1171,81 +1152,6 @@
       }
     ],
     "artists": []
-  },
-  {
-    "title": "世界線リライター",
-    "date": "2026.09.16-2026.09.23",
-    "category": "STAGE",
-    "venues": [],
-    "artists": [
-      "松本幸大"
-    ]
-  },
-  {
-    "title": "シルバーコレクターズ",
-    "date": "2026.09.17-2026.09.27",
-    "category": "STAGE",
-    "venues": [
-      {
-        "date": "2026.09.17",
-        "venue": "東京都 新宿シアタートップス 19:00"
-      },
-      {
-        "date": "2026.09.18",
-        "venue": "東京都 新宿シアタートップス 19:00★"
-      },
-      {
-        "date": "2026.09.19",
-        "venue": "東京都 新宿シアタートップス 13:00"
-      },
-      {
-        "date": "2026.09.19",
-        "venue": "東京都 新宿シアタートップス 18:00★"
-      },
-      {
-        "date": "2026.09.20",
-        "venue": "東京都 新宿シアタートップス 13:00"
-      },
-      {
-        "date": "2026.09.21",
-        "venue": "東京都 新宿シアタートップス 13:00"
-      },
-      {
-        "date": "2026.09.21",
-        "venue": "東京都 新宿シアタートップス 18:00★"
-      },
-      {
-        "date": "2026.09.22",
-        "venue": "東京都 新宿シアタートップス 13:00★"
-      },
-      {
-        "date": "2026.09.22",
-        "venue": "東京都 新宿シアタートップス 18:00★"
-      },
-      {
-        "date": "2026.09.23",
-        "venue": "東京都 新宿シアタートップス 13:00"
-      },
-      {
-        "date": "2026.09.25",
-        "venue": "東京都 新宿シアタートップス 19:00★"
-      },
-      {
-        "date": "2026.09.26",
-        "venue": "東京都 新宿シアタートップス 13:00"
-      },
-      {
-        "date": "2026.09.26",
-        "venue": "東京都 新宿シアタートップス 18:00★"
-      },
-      {
-        "date": "2026.09.27",
-        "venue": "東京都 新宿シアタートップス 13:00"
-      }
-    ],
-    "artists": [
-      "冨岡健翔"
-    ]
   },
   {
     "title": "スクラップ アンド コーラス　-君が灯したメロディー-",
@@ -2836,6 +2742,18 @@
     ]
   },
   {
+    "title": "Endless SHOCK Memories -CONTINUE-",
+    "date": "2026.11.28-2027.02.21",
+    "category": "STAGE",
+    "venues": [],
+    "artists": [
+      "上田竜也 佐藤勝利",
+      "福田悠太 辰巳雄大 越岡裕貴 松崎祐介",
+      "寺西拓人 原嘉孝",
+      "室龍太 高田翔 野澤祐樹"
+    ]
+  },
+  {
     "title": "昭和歌謡劇「歌の銀座パラダイス♪」",
     "date": "2026.11.28-2026.12.06",
     "category": "STAGE",
@@ -3240,6 +3158,15 @@
     ]
   },
   {
+    "title": "世界線リライター",
+    "date": "",
+    "category": "STAGE",
+    "venues": [],
+    "artists": [
+      "松本幸大"
+    ]
+  },
+  {
     "title": "New HISTORY COMING ARENA LIVE -The Imperial Theatre Symphony-",
     "date": "",
     "category": "STAGE",
@@ -3255,48 +3182,6 @@
     "venues": [],
     "artists": [
       "SixTONES"
-    ]
-  },
-  {
-    "title": "中島裕翔 写真展「7okyo color space/ 東京色空間 ～#COT7DF～」",
-    "date": "2026.08.07-2026.09.25",
-    "category": "EVENT",
-    "venues": [],
-    "artists": [
-      "中島裕翔"
-    ]
-  },
-  {
-    "title": "KOYABU SONIC 2026",
-    "date": "2026.09.22",
-    "category": "EVENT",
-    "venues": [],
-    "artists": [
-      "NEWS"
-    ]
-  },
-  {
-    "title": "「フォークソングでやんす」六角精児バンド with 井ノ原快彦",
-    "date": "2026.09.25",
-    "category": "EVENT",
-    "venues": [
-      {
-        "date": "2026.09.25",
-        "venue": "東京都 せたがやイーグレットホール(世田谷区民会館) 18:30"
-      }
-    ],
-    "artists": [
-      "井ノ原快彦"
-    ]
-  },
-  {
-    "title": "Rakuten GirlsAward 2026 AUTUMN/WINTER",
-    "date": "2026.09.26",
-    "category": "EVENT",
-    "venues": [],
-    "artists": [
-      "GUEST MC：田中樹",
-      "ふぉ～ゆ～"
     ]
   },
   {

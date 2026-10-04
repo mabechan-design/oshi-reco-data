@@ -362,40 +362,6 @@
     ]
   },
   {
-    "title": "\"IDOL1ST KENTY\" ASIA TOUR 2026",
-    "date": "2026.08.29-2026.10.04",
-    "category": "CONCERT",
-    "venues": [
-      {
-        "date": "2026.08.29",
-        "venue": "台北 Zepp New Taipei 18:00"
-      },
-      {
-        "date": "2026.08.30",
-        "venue": "台北 Zepp New Taipei 15:00"
-      },
-      {
-        "date": "2026.09.05",
-        "venue": "バンコク SiamPic Hall 18:00"
-      },
-      {
-        "date": "2026.09.06",
-        "venue": "バンコク SiamPic Hall 18:00"
-      },
-      {
-        "date": "2026.10.03",
-        "venue": "ソウル Olympic Hall 17:00"
-      },
-      {
-        "date": "2026.10.04",
-        "venue": "ソウル Olympic Hall 16:00"
-      }
-    ],
-    "artists": [
-      "中島健人"
-    ]
-  },
-  {
     "title": "TAKUYA KIMURA Live Tour 2026 Checkpoint",
     "date": "2026.09.05-2026.11.23",
     "category": "CONCERT",
@@ -1537,28 +1503,6 @@
     ],
     "artists": [
       "安田章大"
-    ]
-  },
-  {
-    "title": "朗読劇 READING WORLD ユネスコ世界記憶遺産 舞鶴への生還『約束の果て』",
-    "date": "2026.09.28-2026.09.29",
-    "category": "STAGE",
-    "venues": [
-      {
-        "date": "2026.09.28",
-        "venue": "東京都 東京国際フォーラム ホールA 19:00"
-      },
-      {
-        "date": "2026.09.29",
-        "venue": "東京都 東京国際フォーラム ホールA 13:00"
-      },
-      {
-        "date": "2026.09.29",
-        "venue": "東京都 東京国際フォーラム ホールA 18:00"
-      }
-    ],
-    "artists": [
-      "佐久間大介"
     ]
   },
   {
@@ -3185,15 +3129,6 @@
     ]
   },
   {
-    "title": "Xnterstellar Music Festival 2026",
-    "date": "2026.10.04",
-    "category": "EVENT",
-    "venues": [],
-    "artists": [
-      "Aぇ! group"
-    ]
-  },
-  {
     "title": "STAR フェス",
     "date": "2026.10.10",
     "category": "EVENT",
@@ -3409,6 +3344,20 @@
     ],
     "artists": [
       "小山慶一郎"
+    ]
+  },
+  {
+    "title": "BREAKERZ LIVE 2027 -VS-",
+    "date": "2027.03.12",
+    "category": "EVENT",
+    "venues": [
+      {
+        "date": "2027.03.12",
+        "venue": "東京都 Zepp DiverCity（TOKYO） 19:00"
+      }
+    ],
+    "artists": [
+      "A.B.C-Z"
     ]
   }
 ]

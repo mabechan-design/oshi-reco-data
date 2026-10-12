@@ -276,92 +276,6 @@
     ]
   },
   {
-    "title": "ROCK FOR YOU LIVE TOUR",
-    "date": "2026.08.18-2026.10.07",
-    "category": "CONCERT",
-    "venues": [
-      {
-        "date": "2026.08.18",
-        "venue": "大阪府 Zepp Osaka Bayside 19:00"
-      },
-      {
-        "date": "2026.08.19",
-        "venue": "大阪府 Zepp Osaka Bayside 14:00"
-      },
-      {
-        "date": "2026.08.19",
-        "venue": "大阪府 Zepp Osaka Bayside 19:00"
-      },
-      {
-        "date": "2026.08.28",
-        "venue": "香川県 festhalle 19:00"
-      },
-      {
-        "date": "2026.08.29",
-        "venue": "岡山県 CRAZYMAMA KINGDOM 18:00"
-      },
-      {
-        "date": "2026.08.31",
-        "venue": "愛知県 Zepp Nagoya 19:00"
-      },
-      {
-        "date": "2026.09.01",
-        "venue": "愛知県 Zepp Nagoya 19:00"
-      },
-      {
-        "date": "2026.09.04",
-        "venue": "岐阜県 岐阜Club-G 19:00"
-      },
-      {
-        "date": "2026.09.09",
-        "venue": "広島県 BLUE LIVE HIROSHIMA 19:00"
-      },
-      {
-        "date": "2026.09.11",
-        "venue": "熊本県 B.9 V1 19:00"
-      },
-      {
-        "date": "2026.09.14",
-        "venue": "福岡県 Zepp Fukuoka 19:00"
-      },
-      {
-        "date": "2026.09.15",
-        "venue": "福岡県 Zepp Fukuoka 19:00"
-      },
-      {
-        "date": "2026.09.18",
-        "venue": "新潟県 NIIGATA LOTS 19:00"
-      },
-      {
-        "date": "2026.09.20",
-        "venue": "東京都 Zepp Haneda（TOKYO） 18:00"
-      },
-      {
-        "date": "2026.09.21",
-        "venue": "東京都 Zepp Haneda（TOKYO） 18:00"
-      },
-      {
-        "date": "2026.09.23",
-        "venue": "宮城県 SENDAI GIGS 18:00"
-      },
-      {
-        "date": "2026.09.28",
-        "venue": "北海道 Zepp Sapporo 19:00"
-      },
-      {
-        "date": "2026.09.29",
-        "venue": "北海道 Zepp Sapporo 19:00"
-      },
-      {
-        "date": "2026.10.07",
-        "venue": "東京都 東京ガーデンシアター <em>19:00 (追加公演)</em>"
-      }
-    ],
-    "artists": [
-      "横山裕"
-    ]
-  },
-  {
     "title": "TAKUYA KIMURA Live Tour 2026 Checkpoint",
     "date": "2026.09.05-2026.11.23",
     "category": "CONCERT",
@@ -714,156 +628,6 @@
     "category": "CONCERT",
     "venues": [],
     "artists": []
-  },
-  {
-    "title": "EX THEATER ARIAKE OPENING LINEUP ミュージカル「タイムトラベラーズ・ワイフ」",
-    "date": "2026.09.05-2026.10.08",
-    "category": "STAGE",
-    "venues": [
-      {
-        "date": "2026.09.05",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00"
-      },
-      {
-        "date": "2026.09.06",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.06",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00<em>※中止</em>"
-      },
-      {
-        "date": "2026.09.07",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00<em>※中止</em>"
-      },
-      {
-        "date": "2026.09.08",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00<em>※中止</em>"
-      },
-      {
-        "date": "2026.09.08",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00<em>※中止</em>"
-      },
-      {
-        "date": "2026.09.10",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00<em>※中止</em>"
-      },
-      {
-        "date": "2026.09.10",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00<em>※中止</em>"
-      },
-      {
-        "date": "2026.09.11",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) <em>15:00※変更</em>"
-      },
-      {
-        "date": "2026.09.12",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.12",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00"
-      },
-      {
-        "date": "2026.09.13",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.14",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
-      },
-      {
-        "date": "2026.09.14",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
-      },
-      {
-        "date": "2026.09.15",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
-      },
-      {
-        "date": "2026.09.17",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
-      },
-      {
-        "date": "2026.09.17",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 18:00"
-      },
-      {
-        "date": "2026.09.18",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
-      },
-      {
-        "date": "2026.09.19",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.19",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00"
-      },
-      {
-        "date": "2026.09.20",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.21",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.21",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 17:00"
-      },
-      {
-        "date": "2026.09.22",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 12:00"
-      },
-      {
-        "date": "2026.09.24",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) 13:00"
-      },
-      {
-        "date": "2026.10.02",
-        "venue": "大阪府 オリックス劇場 18:00"
-      },
-      {
-        "date": "2026.10.03",
-        "venue": "大阪府 オリックス劇場 12:00"
-      },
-      {
-        "date": "2026.10.03",
-        "venue": "大阪府 オリックス劇場 17:00"
-      },
-      {
-        "date": "2026.10.04",
-        "venue": "大阪府 オリックス劇場 12:00"
-      },
-      {
-        "date": "2026.10.05",
-        "venue": "大阪府 オリックス劇場 18:00"
-      },
-      {
-        "date": "2026.10.06",
-        "venue": "大阪府 オリックス劇場 13:00"
-      },
-      {
-        "date": "2026.10.06",
-        "venue": "大阪府 オリックス劇場 18:00"
-      },
-      {
-        "date": "2026.10.07",
-        "venue": "大阪府 オリックス劇場 13:00"
-      },
-      {
-        "date": "2026.10.08",
-        "venue": "大阪府 オリックス劇場 13:00"
-      },
-      {
-        "date": "2026.09.22",
-        "venue": "東京都 EX THEATER ARIAKE (東京ドリームパーク内) <em>17:00※追加</em>"
-      }
-    ],
-    "artists": [
-      "岩本照"
-    ]
   },
   {
     "title": "ミュージカル『ファニー・ガール』",
@@ -1503,64 +1267,6 @@
     ],
     "artists": [
       "安田章大"
-    ]
-  },
-  {
-    "title": "朗読劇「星新一が描いた未来」",
-    "date": "2026.09.30-2026.10.07",
-    "category": "STAGE",
-    "venues": [
-      {
-        "date": "2026.09.30",
-        "venue": "東京都 IMM THEATER 15:00"
-      },
-      {
-        "date": "2026.09.30",
-        "venue": "東京都 IMM THEATER 19:00"
-      },
-      {
-        "date": "2026.10.01",
-        "venue": "東京都 IMM THEATER 19:00"
-      },
-      {
-        "date": "2026.10.02",
-        "venue": "東京都 IMM THEATER 19:00"
-      },
-      {
-        "date": "2026.10.03",
-        "venue": "東京都 IMM THEATER 15:00"
-      },
-      {
-        "date": "2026.10.03",
-        "venue": "東京都 IMM THEATER 19:00"
-      },
-      {
-        "date": "2026.10.04",
-        "venue": "東京都 IMM THEATER 15:00"
-      },
-      {
-        "date": "2026.10.05",
-        "venue": "東京都 IMM THEATER 15:00"
-      },
-      {
-        "date": "2026.10.05",
-        "venue": "東京都 IMM THEATER 19:00"
-      },
-      {
-        "date": "2026.10.06",
-        "venue": "東京都 IMM THEATER 15:00"
-      },
-      {
-        "date": "2026.10.06",
-        "venue": "東京都 IMM THEATER 19:00"
-      },
-      {
-        "date": "2026.10.07",
-        "venue": "東京都 IMM THEATER 15:00"
-      }
-    ],
-    "artists": [
-      "福田悠太"
     ]
   },
   {
@@ -2752,6 +2458,38 @@
     ]
   },
   {
+    "title": "アニマックス朗読劇「逆転裁判Re:1」",
+    "date": "2026.11.29",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.11.29",
+        "venue": "東京都 シアター1010 13:00"
+      },
+      {
+        "date": "2026.11.29",
+        "venue": "東京都 シアター1010 18:00"
+      }
+    ],
+    "artists": [
+      "宮田俊哉"
+    ]
+  },
+  {
+    "title": "河合郁人の拍手歌祭",
+    "date": "2026.12.06",
+    "category": "STAGE",
+    "venues": [
+      {
+        "date": "2026.12.06",
+        "venue": "東京都 IMM THEATER 14:30"
+      }
+    ],
+    "artists": [
+      "河合郁人"
+    ]
+  },
+  {
     "title": "音楽劇『歌え！センシマン！』",
     "date": "2026.12.23-2026.12.27",
     "category": "STAGE",
@@ -3102,21 +2840,24 @@
     ]
   },
   {
-    "title": "世界線リライター",
-    "date": "",
+    "title": "ふぉ〜ゆ〜シン喜劇2027",
+    "date": "2027.03.26-2027.04.11",
     "category": "STAGE",
     "venues": [],
     "artists": [
-      "松本幸大"
+      "ふぉ〜ゆ〜",
+      "辰巳雄大",
+      "越岡裕貴",
+      "松崎祐介）"
     ]
   },
   {
-    "title": "New HISTORY COMING ARENA LIVE -The Imperial Theatre Symphony-",
-    "date": "",
+    "title": "ミュージカル『IRON MASK -三銃士 最終章-』",
+    "date": "2027.05-2027.06",
     "category": "STAGE",
     "venues": [],
     "artists": [
-      "堂本光一"
+      "坂本昌行"
     ]
   },
   {
@@ -3126,15 +2867,6 @@
     "venues": [],
     "artists": [
       "SixTONES"
-    ]
-  },
-  {
-    "title": "STAR フェス",
-    "date": "2026.10.10",
-    "category": "EVENT",
-    "venues": [],
-    "artists": [
-      "ふぉ～ゆ～"
     ]
   },
   {
@@ -3233,6 +2965,15 @@
     "venues": [],
     "artists": [
       "SixTONES"
+    ]
+  },
+  {
+    "title": "池袋ハロウィンコスプレフェス 2026",
+    "date": "2026.10.31",
+    "category": "EVENT",
+    "venues": [],
+    "artists": [
+      "宮田俊哉"
     ]
   },
   {
